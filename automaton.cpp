@@ -6,7 +6,7 @@
 namespace slarx
 {
     std::set<Identifier> Automaton::active_automata_ = std::set<Identifier>();
-    uint32_t Automaton::next_available_id = 1;
+    uint32_t Automaton::next_available_id_ = 1;
     
     const std::set<Identifier>& Automaton::ListIndentifiers()
     {

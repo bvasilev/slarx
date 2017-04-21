@@ -67,7 +67,7 @@ namespace slarx
     private:
         static std::set<Identifier> active_automata_;
         // ID number, which will be assigned to next created Automaton
-        static uint32_t next_available_id;
+        static uint32_t next_available_id_;
         Identifier id_;
         Alphabet alphabet_;
         State start_state_;
