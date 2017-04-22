@@ -8,10 +8,10 @@
 
 int main(int argc, char* argv[])
 {
-    slarx::DFA d("a");
+	slarx::DFA d("a");
 
-    char c;
-    std::cin >> c;
-    
-    return 0;
+	char c;
+	std::cin >> c;
+	
+	return 0;
 }

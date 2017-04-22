@@ -5,21 +5,21 @@
 
 namespace slarx
 {
-    void DFATransitionTable::AddTransition(State from, char on, State to)
-    {
-        if(transitions_[from.GetValue()].find(on) != transitions_[from.GetValue()].end())
-        {
-            throw std::invalid_argument("Attemped to add more than one transition from a State on same character.");
-        }
-        else if(!dfa_alphabet_->Contains(on))
-        {
-            throw std::domain_error("Attempted to add transition on a character, which is not part of the DFA's alphabet.");
-        }
-        else
-        {
-            transitions_[from.GetValue()][on] = to;
-        }
-    }
+	void DFATransitionTable::AddTransition(State from, char on, State to)
+	{
+		if(transitions_[from.GetValue()].find(on) != transitions_[from.GetValue()].end())
+		{
+			throw std::invalid_argument("Attemped to add more than one transition from a State on same character.");
+		}
+		else if(!dfa_alphabet_->Contains(on))
+		{
+			throw std::domain_error("Attempted to add transition on a character, which is not part of the DFA's alphabet.");
+		}
+		else
+		{
+			transitions_[from.GetValue()][on] = to;
+		}
+	}
 
 	const State DFATransitionTable::GetTransition(State from, char on) const
 	{

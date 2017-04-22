@@ -7,8 +7,8 @@
 
 namespace slarx
 {
-    std::vector<int> IntegerParse(const std::string& source);
-    std::vector<std::string> Tokenize(std::string& source, char delimiter = ' ');
+	std::vector<int> IntegerParse(const std::string& source);
+	std::vector<std::string> Tokenize(std::string& source, char delimiter = ' ');
 }
 
 #endif // SLARX_UTILITY_H_INCLUDED
