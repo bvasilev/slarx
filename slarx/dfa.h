@@ -39,17 +39,17 @@ namespace slarx
 		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(std::make_unique<const Alphabet>(GetAlphabet())); }
 
 		// Reads information for an Automaton from the file located at path 
-		virtual bool ReadFromFile(const std::string& path);
+		virtual bool ReadFromFile (const std::string& path) override;
 		// Prints all transitions of the Automaton to target std::ostream
-		virtual void PrintTransitions(std::ostream& output_stream) const;
+		virtual void PrintTransitions(std::ostream& output_stream) const override;
 		// Exports the Automaton to a .at file at location path
-		virtual void Export(std::string& path) const;
+		virtual void Export(std::string& path) const override;
 
 		// Returns true if word is in the automaton's language and false otherwise
-		virtual bool Recognize(std::string& word) const;
+		virtual bool Recognize(std::string& word) const override;
 		// Answers questions about the properties of the language the Automaton describes
-		virtual bool IsLanguageEmpty() const;
-		virtual bool IsLanguageInfinite() const;
+		virtual bool IsLanguageEmpty() const override;
+		virtual bool IsLanguageInfinite() const override;
 
 	private:
 		DFATransitionTable transition_table_;
