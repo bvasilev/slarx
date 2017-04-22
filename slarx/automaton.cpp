@@ -20,16 +20,6 @@ namespace slarx
         return Identifier(last_assigned_id_);
     }
 
-    /*void swap(Automaton& other)
-    {
-        using std::swap;
-        swap(id_, other.id_);
-        swap(number_of_states_, other.number_of_states_);
-        swap(alphabet_, other.alphabet_);
-        swap(start_state_, other.start_state_);
-        swap(accepting_states_, other.accepting_states_);
-    }*/
-
     const std::set<Identifier>& Automaton::ListIndentifiers()
     {
         return active_automata_;
@@ -44,6 +34,24 @@ namespace slarx
             characters_.insert(input_char);
         }
         return true;
+    }
+
+    void swap(Identifier & a, Identifier & b) noexcept
+    {
+        using std::swap; 
+        swap(a.id_, b.id_);
+    }
+
+    void swap(State & a, State & b) noexcept
+    {
+		using std::swap; 
+		swap(a.value_, b.value_);
+    }
+
+    void swap(Alphabet & a, Alphabet & b) noexcept
+    {
+		using std::swap;
+		swap(a.characters_, b.characters_);
     }
 
     void swap(Automaton & a, Automaton & b) noexcept

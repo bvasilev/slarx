@@ -11,9 +11,4 @@ namespace slarx
     std::vector<std::string> Tokenize(std::string& source, char delimiter = ' ');
 }
 
-namespace std
-{
-
-}
-
 #endif // SLARX_UTILITY_H_INCLUDED

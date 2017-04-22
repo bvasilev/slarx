@@ -5,6 +5,7 @@
 #include "automaton.h"
 #include "conversion_nfa.h"
 #include "utility.h"
+#include "dfa.h"
 
 #endif // SLARX_H_INCLUDED
 

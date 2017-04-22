@@ -113,12 +113,14 @@
   <ItemGroup>
     <ClCompile Include="automaton.cpp" />
     <ClCompile Include="conversion_nfa.cpp" />
+    <ClCompile Include="dfa.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="automaton.h" />
     <ClInclude Include="conversion_nfa.h" />
+    <ClInclude Include="dfa.h" />
     <ClInclude Include="slarx.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
