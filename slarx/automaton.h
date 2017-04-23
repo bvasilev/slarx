@@ -39,6 +39,9 @@ namespace slarx
 		State& operator=(State other) { swap(*this, other); return *this; };
 		~State() = default;
 
+		bool operator==(const State& other) const { return value_ == other.value_; }
+		bool operator<(const State& other) const { return value_ < other.value_; }
+
 		friend void swap(State& a, State& b) noexcept;
 	private:
 		static const int kUninitialized = -1;
@@ -53,6 +56,7 @@ namespace slarx
 		Alphabet(const std::string& alphabet) { ReadAlphabet(alphabet); }
 		Alphabet(const Alphabet& other) : characters_(other.characters_) { }
 		Alphabet& operator=(Alphabet other) { swap(*this, other); return *this; }
+		~Alphabet() = default;
 		bool ReadAlphabet(const std::string& source);
 		bool Contains(char c) const { return std::find(characters_.begin(), characters_.end(), c) != characters_.end(); }
 		friend void swap(Alphabet& a, Alphabet& b) noexcept;
@@ -65,10 +69,20 @@ namespace slarx
 	class Automaton
 	{
 	public:
+		static constexpr char* kUnspecifiedType(){ return "Automaton"; }
+		static constexpr char* kDFAType(){ return "DFA"; }
+		static constexpr char* kNFAType(){ return "NFA"; }
+		static constexpr char* kEpsilonNFAType(){ return "ENFA"; }
+
 		Automaton() = default;
 		// TODO - Test this
-		Automaton(const Automaton& other) : number_of_states_(other.number_of_states_), alphabet_(other.alphabet_),
-			start_state_(other.start_state_), accepting_states_(other.accepting_states_), id_(Automaton::GetIdentifier()) { }
+		Automaton(const Automaton& other) : id_(Automaton::GetIdentifier()), number_of_states_(other.number_of_states_), 
+											alphabet_(other.alphabet_), start_state_(other.start_state_), 
+											accepting_states_(other.accepting_states_)  { }
+		Automaton(uint32_t&& number_of_states, Alphabet&& alphabet, 
+				  State&& start_state, std::set<State>&& accepting_states) : id_(GetIdentifier()), number_of_states_(number_of_states),
+																			alphabet_(alphabet), start_state_(start_state), accepting_states_(accepting_states) { }
+		virtual ~Automaton() = default;
 		// Returns a std::set containing the identifiers of all currently availiable Automata
 		static const std::set<Identifier>& ListIndentifiers();
 		// Reads information for an Automaton from the file located at path 

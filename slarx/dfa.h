@@ -37,9 +37,19 @@ namespace slarx
 		// Reads a DFA from a file located at path
 		DFA(const std::string& path);
 		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(std::make_unique<const Alphabet>(GetAlphabet())); }
+		DFA(uint32_t&& number_of_states, Alphabet&& alphabet, State&& start_state, 
+			std::set<State>&& accepting_states, DFATransitionTable&& transition_table) :	
+			Automaton(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states)), transition_table_(transition_table) { }
+		DFA(DFA&& other) { swap(*this, other); }
+		DFA& operator=(DFA other){ swap(*this, other); return *this; }
+		~DFA() = default;
 
 		// Reads information for an Automaton from the file located at path 
-		virtual bool ReadFromFile (const std::string& path) override;
+		virtual bool ReadFromFile(const std::string& path) override;
+		// Helper funtion for ReadFromFile. Reads a know DFA directly
+		bool ReadDFA(const std::string& path);
+		// Helper funtion for ReadFromFile. Read an unknown Automaton type or NFA and converts it to a DFA
+		bool ReadNFA(const std::string& path);
 		// Prints all transitions of the Automaton to target std::ostream
 		virtual void PrintTransitions(std::ostream& output_stream) const override;
 		// Exports the Automaton to a .at file at location path
@@ -51,8 +61,20 @@ namespace slarx
 		virtual bool IsLanguageEmpty() const override;
 		virtual bool IsLanguageInfinite() const override;
 
+		friend void swap(DFA& a, DFA& b) noexcept;
+
 	private:
+		State Transition(State from, char on);
 		DFATransitionTable transition_table_;
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<slarx::State>
+	{
+		size_t operator()(const slarx::State& a) const { return hash<int>()(a.GetValue()); }
 	};
 }
 
