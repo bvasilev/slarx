@@ -182,10 +182,5 @@ namespace slarx
 		return false;
 	}
 
-	State DFA::Transition(State from, char on)
-	{
-		return transition_table_.GetTransition(from, on);
-	}
-
 }
 

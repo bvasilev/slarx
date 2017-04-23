@@ -23,7 +23,8 @@ namespace slarx
 
 		void AddTransition(State from, char on, State to);
 		// Returns the transition if it exists, or an uninitialized state (i.e. which has value_ = State::kUninitialized)
-		const State GetTransition(State from, char on) const; 
+		const State GetTransition(State from, char on) const;
+		// Each DFATransition table should be associated with a single DFA, thus the unique_ptr
 		void SetAlphabet(std::unique_ptr<const Alphabet> alphabet) { dfa_alphabet_ = std::move(alphabet); }
 		friend void swap(DFATransitionTable& a, DFATransitionTable& b) noexcept;
 	private:
@@ -37,6 +38,7 @@ namespace slarx
 		// Reads a DFA from a file located at path
 		DFA(const std::string& path);
 		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(std::make_unique<const Alphabet>(GetAlphabet())); }
+		// Constructor which "cannibalizes" its arguments. Should be used when reading a DFA to ensure that there is sufficient memory before assigning any members.
 		DFA(uint32_t&& number_of_states, Alphabet&& alphabet, State&& start_state, 
 			std::set<State>&& accepting_states, DFATransitionTable&& transition_table) :	
 			Automaton(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states)), transition_table_(transition_table) { }
@@ -64,7 +66,7 @@ namespace slarx
 		friend void swap(DFA& a, DFA& b) noexcept;
 
 	private:
-		State Transition(State from, char on);
+		State Transition(State from, char on) { return transition_table_.GetTransition(from, on); }
 		DFATransitionTable transition_table_;
 	};
 }
