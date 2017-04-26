@@ -45,13 +45,8 @@ namespace slarx
 		DFA(DFA&& other) { swap(*this, other); }
 		DFA& operator=(DFA other){ swap(*this, other); return *this; }
 		~DFA() = default;
-
 		// Reads information for an Automaton from the file located at path 
 		virtual bool ReadFromFile(const std::string& path) override;
-		// Helper funtion for ReadFromFile. Reads a know DFA directly
-		bool ReadDFA(const std::string& path);
-		// Helper funtion for ReadFromFile. Read an unknown Automaton type or NFA and converts it to a DFA
-		bool ReadNFA(const std::string& path);
 		// Prints all transitions of the Automaton to target std::ostream
 		virtual void PrintTransitions(std::ostream& output_stream) const override;
 		// Exports the Automaton to a .at file at location path
@@ -63,9 +58,14 @@ namespace slarx
 		virtual bool IsLanguageEmpty() const override;
 		virtual bool IsLanguageInfinite() const override;
 
+		const DFATransitionTable& GetTransitionTable() const { return transition_table_; }
 		friend void swap(DFA& a, DFA& b) noexcept;
 
 	private:
+		// Helper funtion for ReadFromFile. Reads a know DFA directly
+		bool ReadDFA(const std::string& path);
+		// Helper funtion for ReadFromFile. Read an unknown Automaton type or NFA and converts it to a DFA
+		bool ReadNFA(const std::string& path);
 		State Transition(State from, char on) { return transition_table_.GetTransition(from, on); }
 		DFATransitionTable transition_table_;
 	};

@@ -45,7 +45,7 @@ namespace slarx
 			start_state_(other.start_state_), accepting_states_(other.accepting_states_) { }
 		virtual ~ConversionNFA() = default;
 		// Reads information for an Automaton from the file located at path 
-		virtual bool ReadFromFile(const std::string& path) = 0;
+		virtual bool ReadFromFile(const std::string& path);
 
 		uint32_t Size() const { return number_of_states_; }
 		const Alphabet& GetAlphabet() const { return alphabet_; }
@@ -60,13 +60,14 @@ namespace slarx
 		bool ReadAlphabet(std::string& source) { return alphabet_.ReadAlphabet(source); }
 		void SetNumberOfStates(uint32_t number) { number_of_states_ = number; }
 		void SetStartState(State state) { start_state_ = state; }
-		void SetAcceptingStates(std::set<State> accepting) { accepting_states_ = std::move(accepting); }
+		void SetAcceptingStates(std::set<State>&& accepting) { accepting_states_ = std::move(accepting); }
 
 	private:
 		uint32_t number_of_states_;
 		Alphabet alphabet_;
 		State start_state_;
 		std::set<State> accepting_states_;
+		ConversionNFATransitionTable transition_table_;
 	};
 }
 
