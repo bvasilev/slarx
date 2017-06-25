@@ -3,8 +3,10 @@
 #define SLARX_DFA_H_INCLUDED
 
 #include "automaton.h"
+#include "graph.h"
 
 #include <unordered_map>
+#include <set>
 #include <vector>
 #include <algorithm>
 #include <memory>
@@ -25,6 +27,8 @@ namespace slarx
 		void AddTransition(State from, char on, State to);
 		// Returns the transition if it exists, or an uninitialized state (i.e. which has value_ = State::kUninitialized)
 		const State GetTransition(State from, char on) const;
+		// Returns a graph representation of the transition function (disregarding the characters used for transitions)
+		DirectedGraph GetGraph() const;
 		// Each DFATransition table should be associated with a single DFA, thus the unique_ptr
 		void SetAlphabet(const Alphabet& alphabet) { dfa_alphabet_ = alphabet; }
 		void SetNumberOfStates(unsigned dfa_number_of_states){ transitions_.resize(dfa_number_of_states); }

@@ -31,6 +31,7 @@ namespace slarx
 	{
 	public:
 		int GetValue() const { return value_; }
+		bool IsInitialized() const { return value_ != kUninitialized; }
 		State() : value_(kUninitialized) { }
 		explicit State(uint32_t value) : value_(value) { }
 		State(std::string& source);
@@ -60,7 +61,8 @@ namespace slarx
 
 		bool ReadAlphabet(const std::string& source);
 		bool Contains(char c) const { return std::find(characters_.begin(), characters_.end(), c) != characters_.end(); }
-		int Size(){ return characters_.size(); }
+		size_t Size(){ return characters_.size(); }
+		const std::set<char>& GetCharacters() const { return characters_; }
 
 		friend void swap(Alphabet& a, Alphabet& b) noexcept;
 	private:
@@ -103,8 +105,10 @@ namespace slarx
 
 		uint32_t Size() const { return number_of_states_; }
 		const Alphabet& GetAlphabet() const { return alphabet_; }
+		const std::set<char>& GetAlphabetCharacters() const { return alphabet_.GetCharacters(); }
 		State GetStartState() const { return start_state_; }
 		const std::set<State>& GetAcceptingStates() const { return accepting_states_; }
+		bool IsAccepting(State state) const { return (accepting_states_.find(state) != accepting_states_.end()); }
 		// TODO - Decide if necessary
 		friend void swap(Automaton& a, Automaton& b) noexcept;
 

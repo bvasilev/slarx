@@ -6,6 +6,7 @@
 #include "conversion_nfa.h"
 #include "utility.h"
 #include "dfa.h"
+#include "graph.h"
 
 #endif // SLARX_H_INCLUDED
 

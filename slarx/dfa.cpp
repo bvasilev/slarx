@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <queue>
 
 namespace slarx
 {
@@ -46,6 +47,20 @@ namespace slarx
 				output_stream << from << ' ' << on_to.first << ' ' << on_to.second.GetValue() << std::endl;
 			}
 		}
+	}
+
+	DirectedGraph DFATransitionTable::GetGraph() const
+	{
+		DirectedGraph G(transitions_.size());
+		for(int i = 0; i < G.size(); ++i)
+		{
+			for(auto on_to : transitions_[ i ])
+			{
+				G[i].insert(on_to.second.GetValue());
+			}
+		}
+
+		return G;
 	}
 
 	void swap(DFATransitionTable& a, DFATransitionTable& b) noexcept
@@ -215,14 +230,47 @@ namespace slarx
 
 	bool DFA::Recognize(std::string & word) const
 	{
-		throw std::domain_error("Function not implemented.");
-		return false;
+		State current_state = GetStartState();
+		for(char c : word)
+		{
+			current_state = transition_table_.GetTransition(current_state, c);
+		}
+		return IsAccepting(current_state);
 	}
 
+	// Implemets BFS on the graph of the automaton to check if the language is empty
+	// Returns false if any accepting state is reachable from the start state
+	// and true otherwise
 	bool DFA::IsLanguageEmpty() const
 	{
-		throw std::domain_error("Function not implemented.");
-		return false;
+		std::vector<bool> visited(Size(), false);
+		const std::set<char>& alphabet_characters = GetAlphabetCharacters();
+		std::queue<State> Q;
+		Q.push(GetStartState());
+		{
+			State top = Q.front();
+			Q.pop();
+			for(char c : alphabet_characters)
+			{
+				State to = transition_table_.GetTransition(top, c);
+				if(to.IsInitialized())
+				{
+					if(!visited[ to.GetValue() ])
+					{
+						visited[ to.GetValue() ] = true;
+						Q.push(to);
+					}
+				}
+			}
+		}
+
+		for(State s : GetAcceptingStates())
+		{
+			if(visited[s.GetValue()])
+				return false;
+		}
+
+		return true;
 	}
 
 	bool DFA::IsLanguageInfinite() const
