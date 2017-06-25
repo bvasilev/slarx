@@ -16,6 +16,7 @@ namespace slarx
 	public:
 		typedef std::vector<std::unordered_map<char, State> > TransitionTable;
 		DFATransitionTable() = default;
+		DFATransitionTable(unsigned dfa_number_of_states, Alphabet& dfa_alphabet) : transitions_(dfa_number_of_states), dfa_alphabet_(dfa_alphabet) { }
 		DFATransitionTable(const DFATransitionTable& other) : transitions_(other.transitions_) { }
 		DFATransitionTable(DFATransitionTable&& other) { swap(*this, other); }
 		DFATransitionTable& operator=(DFATransitionTable other){ swap(*this, other); return *this; }
@@ -25,11 +26,15 @@ namespace slarx
 		// Returns the transition if it exists, or an uninitialized state (i.e. which has value_ = State::kUninitialized)
 		const State GetTransition(State from, char on) const;
 		// Each DFATransition table should be associated with a single DFA, thus the unique_ptr
-		void SetAlphabet(std::unique_ptr<const Alphabet> alphabet) { dfa_alphabet_ = std::move(alphabet); }
+		void SetAlphabet(const Alphabet& alphabet) { dfa_alphabet_ = alphabet; }
+		void SetNumberOfStates(unsigned dfa_number_of_states){ transitions_.resize(dfa_number_of_states); }
+		// Prints all transitions of the DFA formatted one transition on each line, starting with all transitions of state 0, then state 1, etc...
+		void PrintTransitions(std::ostream& output_stream) const;
+
 		friend void swap(DFATransitionTable& a, DFATransitionTable& b) noexcept;
 	private:
 		TransitionTable transitions_;
-		std::unique_ptr<const Alphabet> dfa_alphabet_;
+		Alphabet dfa_alphabet_;
 	};
 
 	class DFA : public Automaton
@@ -37,7 +42,7 @@ namespace slarx
 	public:
 		// Reads a DFA from a file located at path
 		DFA(const std::string& path);
-		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(std::make_unique<const Alphabet>(GetAlphabet())); }
+		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(other.GetAlphabet()); }
 		// Constructor which "cannibalizes" its arguments. Should be used when reading a DFA to ensure that there is sufficient memory before assigning any members.
 		DFA(uint32_t&& number_of_states, Alphabet&& alphabet, State&& start_state, 
 			std::set<State>&& accepting_states, DFATransitionTable&& transition_table) :	

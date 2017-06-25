@@ -1,0 +1,6 @@
+<Automaton type>
+<Number of states>
+<Alphabet>
+<Start state>
+<Final states>
+

@@ -21,3 +21,8 @@ void slarx::ConversionNFATransitionTable::AddTransition(State from, char on, Sta
 {
 	transitions_[from.GetValue()][on].insert(to);
 }
+
+bool slarx::ConversionNFA::ReadFromFile(const std::string& path)
+{
+	return false;
+}

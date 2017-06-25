@@ -57,8 +57,11 @@ namespace slarx
 		Alphabet(const Alphabet& other) : characters_(other.characters_) { }
 		Alphabet& operator=(Alphabet other) { swap(*this, other); return *this; }
 		~Alphabet() = default;
+
 		bool ReadAlphabet(const std::string& source);
 		bool Contains(char c) const { return std::find(characters_.begin(), characters_.end(), c) != characters_.end(); }
+		int Size(){ return characters_.size(); }
+
 		friend void swap(Alphabet& a, Alphabet& b) noexcept;
 	private:
 		std::set<char> characters_;

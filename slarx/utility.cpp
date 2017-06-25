@@ -45,4 +45,9 @@ namespace slarx
 		}
 		return tokens;
 	}
+
+	void Debug(const std::string& debug_message)
+	{
+		std::cerr << debug_message << std::endl;
+	}
 }

@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 
@@ -13,7 +14,7 @@ namespace slarx
 		{
 			throw std::invalid_argument("Attemped to add more than one transition from a State on same character.");
 		}
-		else if(!dfa_alphabet_->Contains(on))
+		else if(!dfa_alphabet_.Contains(on))
 		{
 			throw std::domain_error("Attempted to add transition on a character, which is not part of the DFA's alphabet.");
 		}
@@ -36,10 +37,22 @@ namespace slarx
 		}
 	}
 
+	void DFATransitionTable::PrintTransitions(std::ostream& output_stream) const
+	{
+		for(int from = 0; from < transitions_.size(); ++from)
+		{
+			for(auto on_to : transitions_[ from ])
+			{
+				output_stream << from << ' ' << on_to.first << ' ' << on_to.second.GetValue() << std::endl;
+			}
+		}
+	}
+
 	void swap(DFATransitionTable& a, DFATransitionTable& b) noexcept
 	{
 		using std::swap; 
 		swap(a.transitions_, b.transitions_);
+		swap(a.dfa_alphabet_, b.dfa_alphabet_);
 	}
 
 	void swap(DFA& a, DFA& b) noexcept
@@ -71,7 +84,7 @@ namespace slarx
 		else if(line == Automaton::kUnspecifiedType() || line == Automaton::kNFAType() || line == Automaton::kEpsilonNFAType())
 		{
 			input_file.close();
-			ReadDFA(path);
+			ReadNFA(path);
 		}
 		else
 		{
@@ -85,7 +98,8 @@ namespace slarx
 	{
 		std::ifstream input_file(path);
 		std::string line;
-		getline(input_file, line);
+		getline(input_file, line); // Discard automaton type specifier
+		line.clear();
 
 		uint32_t number_of_states;
 		Alphabet alphabet;
@@ -94,6 +108,7 @@ namespace slarx
 		std::vector<int> integers;
 		for(int i = 1; i <= 4; ++i)
 		{
+			getline(input_file, line);
 			switch(i)
 			{
 				// TODO - Reformat this...
@@ -138,13 +153,47 @@ namespace slarx
 		}
 
 		// TODO - read transitions
-		DFATransitionTable transition_table;
-		/*
-		/ ...
-		*/
+		DFATransitionTable transition_table(number_of_states, alphabet);
+		transition_table.SetAlphabet(alphabet);
+		int line_number = 5;
+		while(getline(input_file, line))
+		{
+			std::vector<std::string> tokens = Tokenize(line, ' ');
+			if(tokens.size() == 3)
+			{
+				int from = IntegerParse(tokens[0])[0];
+				char on = tokens[1][0]; // TODO: this should check if tokens[1] is really a single character
+				int to = IntegerParse(tokens[2])[0];
+				if(from >= 0 && from <= number_of_states && to >= 0 && to <= number_of_states)
+				{
+					transition_table.AddTransition(State(from), on, State(to));
+				}
+				else
+				{
+					std::stringstream error_message;
+					error_message << "Line " << line_number << " (transition of DFA) - transition contains an unexisting state!";
+					throw(std::invalid_argument(error_message.str()));
+				}
+			}
+			else
+			{
+				std::stringstream error_message;
+				error_message << "Line " << line_number << " (transition of DFA) contains too many or too few arguments! (should be 3)";
+				throw(std::invalid_argument(error_message.str()));
+			}
+
+			++line_number;
+		}
+
+		if(line_number - 5 != number_of_states * alphabet.Size())
+		{
+			throw(std::invalid_argument("Too few transitions specified for a DFA! It should have a transition from every state on every character!"));
+		}
 
 		*this = DFA(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states), std::move(transition_table));
 		
+		Debug("Sucessfully read DFA!");
+
 		return true;
 	}
 
@@ -156,7 +205,7 @@ namespace slarx
 
 	void DFA::PrintTransitions(std::ostream& output_stream) const
 	{
-		throw std::domain_error("Function not implemented.");
+		transition_table_.PrintTransitions(output_stream);
 	}
 
 	void DFA::Export(std::string& path) const
