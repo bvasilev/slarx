@@ -16,11 +16,16 @@ namespace slarx
 	// Computes transpose of graph G
 	DirectedGraph Transpose(DirectedGraph& G);
 	/// Implements finding SCC using Kosaraju's algorithm
-	void FindSCC(DirectedGraph& G);
+	std::vector<std::set<int> > FindSCC(DirectedGraph& G);
+
 	// Performs DFS on graph. Returns finish times on vertices
-	std::vector<int> DFS(DirectedGraph& G);
+	std::vector<int> DFS(const DirectedGraph& G);
 	// Auxillary function for DFS (this is the recursive part)
-	void DFS_Visit(int u, DirectedGraph& G, std::vector<bool>& visited, std::vector<int>& finish_time, int& time);
+	void DFS_Visit(int u, const DirectedGraph& G, std::vector<bool>& visited, std::vector<int>& finish_time, int& time);
+
+	// Performs DFS on G, but considers order specified by input vector
+	std::vector<std::set<int> > DFS2(const DirectedGraph& G, const std::vector<int>& order);
+	void DFS2_Visit(int u, std::set<int>& component, const DirectedGraph& G, std::vector<bool>& visited);
 }
 
 #endif // SLARX_GRAPH_H_INCLUDED
