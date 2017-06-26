@@ -176,9 +176,9 @@ namespace slarx
 			std::vector<std::string> tokens = Tokenize(line, ' ');
 			if(tokens.size() == 3)
 			{
-				int from = IntegerParse(tokens[0])[0];
+				unsigned from = IntegerParse(tokens[0])[0];
 				char on = tokens[1][0]; // TODO: this should check if tokens[1] is really a single character
-				int to = IntegerParse(tokens[2])[0];
+				unsigned to = IntegerParse(tokens[2])[0];
 				if(from >= 0 && from <= number_of_states && to >= 0 && to <= number_of_states)
 				{
 					transition_table.AddTransition(State(from), on, State(to));
@@ -238,45 +238,15 @@ namespace slarx
 		return IsAccepting(current_state);
 	}
 
-	// Implemets BFS on the graph of the automaton to check if the language is empty
-	// Returns false if any accepting state is reachable from the start state
-	// and true otherwise
+	// Returns false if any accepting state is reachable from the start state and true otherwise
 	bool DFA::IsLanguageEmpty() const
 	{
-		std::vector<bool> visited(Size(), false);
-		const std::set<char>& alphabet_characters = GetAlphabetCharacters();
-		std::queue<State> Q;
-		Q.push(GetStartState());
-		{
-			State top = Q.front();
-			Q.pop();
-			for(char c : alphabet_characters)
-			{
-				State to = transition_table_.GetTransition(top, c);
-				if(to.IsInitialized())
-				{
-					if(!visited[ to.GetValue() ])
-					{
-						visited[ to.GetValue() ] = true;
-						Q.push(to);
-					}
-				}
-			}
-		}
-
-		for(State s : GetAcceptingStates())
-		{
-			if(visited[s.GetValue()])
-				return false;
-		}
-
-		return true;
+		return IsLanguageEmpty_AUX(transition_table_.GetGraph(), GetStartState(), GetAcceptingStates());
 	}
 
 	bool DFA::IsLanguageInfinite() const
 	{
-		throw std::domain_error("Function not implemented.");
-		return false;
+		return IsLanguageInfinite_AUX(transition_table_.GetGraph(), GetStartState(), GetAcceptingStates());
 	}
 
 }

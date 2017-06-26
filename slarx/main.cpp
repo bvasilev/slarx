@@ -37,6 +37,8 @@ void test_graph(slarx::DFA& d)
 		}
 		std::cout << std::endl;
 	}
+	std::cout << "Language empty: " << d.IsLanguageEmpty() << std::endl;
+	std::cout << "Language infinite: " << d.IsLanguageInfinite() << std::endl;
 	std::cout << std::endl;
 }
 
@@ -65,6 +67,10 @@ void test1()
 	slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa3.txt");
 	//test1_aux(d3);
 	test_graph(d3);
+
+	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa4.txt");
+	//test1_aux(d4);
+	test_graph(d4);
 }
 
 void test1_aux(slarx::DFA& d)
