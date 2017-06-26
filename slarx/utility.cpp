@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <exception>
+#include <set>
 
 namespace slarx
 {

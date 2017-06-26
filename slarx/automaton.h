@@ -72,6 +72,9 @@ namespace slarx
 		void Debug_PrintAlphabet(std::ostream& out){ for(auto i : characters_ ) out << i << ' '; }
 	};
 
+	// Merges the characters of two alphabets, returning the result (Set union)
+	Alphabet MergeAlphabets(const Alphabet& a, const Alphabet& b);
+
 	class Automaton
 	{
 	public:
@@ -132,7 +135,12 @@ namespace slarx
 		State start_state_;
 		std::set<State> accepting_states_;
 	};
+
+	// Reads data, which is common for all automata (reads first 5 lines of file)
+	void ReadAutomatonData(std::ifstream& input_file, uint32_t& number_of_states, Alphabet& alphabet, State& start_state, std::set<State>& accepting_states);
 }
+
+
 
 
 #endif // SLARX_AUTOMATON_H_INCLUDED

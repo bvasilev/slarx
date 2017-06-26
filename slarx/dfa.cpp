@@ -113,63 +113,18 @@ namespace slarx
 	{
 		std::ifstream input_file(path);
 		std::string line;
-		getline(input_file, line); // Discard automaton type specifier
-		line.clear();
 
 		uint32_t number_of_states;
 		Alphabet alphabet;
 		State start_state;
 		std::set<State> accepting_states;
 		std::vector<int> integers;
-		for(int i = 1; i <= 4; ++i)
-		{
-			getline(input_file, line);
-			switch(i)
-			{
-				// TODO - Reformat this...
-				case 1:
-					integers = IntegerParse(line);
-					if(integers.size() != 1)
-					{
-						integers.clear();
-						throw std::invalid_argument("The second row specifies an invalid number of states.");
-					}
-					else
-					{
-						number_of_states = integers[0];
-						integers.clear();
-					}
-					break;
-				case 2:
-					alphabet.ReadAlphabet(line);
-					break;
-				case 3:
-					integers = IntegerParse(line);
-					if(integers.size() != 1)
-					{
-						integers.clear();
-						throw std::invalid_argument("The fourth row specifies an invalid number for a start state.");
-					}
-					else
-					{
-						start_state = State(integers[0]);
-						integers.clear();
-					}
-					break;
-				case 4:
-					integers = IntegerParse(line);
-					for(auto number : integers)
-					{
-						accepting_states.insert(State(number));
-					}
-					integers.clear();
-					break;
-			}
-		}
+		
+		ReadAutomatonData(input_file, number_of_states, alphabet, start_state, accepting_states);
 
 		// TODO - read transitions
 		DFATransitionTable transition_table(number_of_states, alphabet);
-		transition_table.SetAlphabet(alphabet);
+		//transition_table.SetAlphabet(alphabet);
 		int line_number = 5;
 		while(getline(input_file, line))
 		{
@@ -214,6 +169,9 @@ namespace slarx
 
 	bool DFA::ReadNFA(const std::string & path)
 	{
+		ConversionNFA cnfa;
+		cnfa.ReadFromFile(path);
+
 		throw std::domain_error("Function not implemented.");
 		return false;
 	}

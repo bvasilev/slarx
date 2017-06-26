@@ -71,6 +71,8 @@ void test1()
 	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa4.txt");
 	test1_aux(d4);
 	test_graph(d4);
+
+	//slarx::DFA n1("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa1.txt");
 }
 
 void test1_aux(slarx::DFA& d)
