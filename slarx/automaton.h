@@ -63,6 +63,7 @@ namespace slarx
 		bool Contains(char c) const { return std::find(characters_.begin(), characters_.end(), c) != characters_.end(); }
 		size_t Size(){ return characters_.size(); }
 		const std::set<char>& GetCharacters() const { return characters_; }
+		void AddCharacter(char c){ characters_.insert(c); }
 
 		friend void swap(Alphabet& a, Alphabet& b) noexcept;
 	private:

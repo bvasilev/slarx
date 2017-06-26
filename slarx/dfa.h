@@ -34,6 +34,7 @@ namespace slarx
 		void SetNumberOfStates(unsigned dfa_number_of_states){ transitions_.resize(dfa_number_of_states); }
 		// Prints all transitions of the DFA formatted one transition on each line, starting with all transitions of state 0, then state 1, etc...
 		void PrintTransitions(std::ostream& output_stream) const;
+		const TransitionTable& GetTransitions() const { return transitions_; }
 
 		friend void swap(DFATransitionTable& a, DFATransitionTable& b) noexcept;
 	private:
@@ -75,7 +76,7 @@ namespace slarx
 		bool ReadDFA(const std::string& path);
 		// Helper funtion for ReadFromFile. Read an unknown Automaton type or NFA and converts it to a DFA
 		bool ReadNFA(const std::string& path);
-		State Transition(State from, char on) { return transition_table_.GetTransition(from, on); }
+		State Transition(State from, char on) const { return transition_table_.GetTransition(from, on); }
 		DFATransitionTable transition_table_;
 	};
 }

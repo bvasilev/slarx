@@ -2,7 +2,7 @@
 #ifndef SLARX_CONVERSION_NFA_H_INCLUDED
 #define SLARX_CONVERSION_NFA_H_INCLUDED
 
-#include "slarx.h"
+#include "dfa.h"
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -43,6 +43,7 @@ namespace slarx
 		// TODO - Test this
 		ConversionNFA(const ConversionNFA& other) : number_of_states_(other.number_of_states_), alphabet_(other.alphabet_),
 			start_state_(other.start_state_), accepting_states_(other.accepting_states_) { }
+		ConversionNFA(const DFA& dfa);
 		virtual ~ConversionNFA() = default;
 		// Reads information for an Automaton from the file located at path 
 		bool ReadFromFile(const std::string& path);

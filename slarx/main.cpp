@@ -57,25 +57,25 @@ int main(int argc, char* argv[])
 void test1()
 {
 	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
-	//test1_aux(d1);
+	test1_aux(d1);
 	test_graph(d1);
 
 	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
-	//test1_aux(d2);
+	test1_aux(d2);
 	test_graph(d2);
 
 	slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa3.txt");
-	//test1_aux(d3);
+	test1_aux(d3);
 	test_graph(d3);
 
 	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa4.txt");
-	//test1_aux(d4);
+	test1_aux(d4);
 	test_graph(d4);
 }
 
 void test1_aux(slarx::DFA& d)
 {
-	std::vector<std::string> test_set { "aba", "aaa", "bbb", "abb" };
+	std::vector<std::string> test_set { "aba", "aaa", "bbb", "abb", "abcdef" };
 
 	d.PrintTransitions(std::cout);
 	std::cout << "Language: " << d.IsLanguageEmpty() << std::endl;

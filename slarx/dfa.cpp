@@ -233,7 +233,14 @@ namespace slarx
 		State current_state = GetStartState();
 		for(char c : word)
 		{
-			current_state = transition_table_.GetTransition(current_state, c);
+			if(GetAlphabet().Contains(c))
+			{
+				current_state = transition_table_.GetTransition(current_state, c);
+			}
+			else
+			{
+				return false;
+			}
 		}
 		return IsAccepting(current_state);
 	}
