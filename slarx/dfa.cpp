@@ -169,12 +169,10 @@ namespace slarx
 
 	bool DFA::ReadNFA(const std::string & path)
 	{
-		ConversionNFA cnfa;
-		cnfa.ReadFromFile(path);
-		cnfa.ToDFA();
+		ConversionNFA conversion_nfa(path);
+		(*this) = conversion_nfa.ToDFA();
 
-		throw std::domain_error("Function not implemented.");
-		return false;
+		return true;
 	}
 
 	void DFA::PrintTransitions(std::ostream& output_stream) const

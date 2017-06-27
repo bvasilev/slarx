@@ -43,10 +43,33 @@ void test_graph(slarx::DFA& d)
 	std::cout << std::endl;
 }
 
+void test_all()
+{
+	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
+	//test1_aux(d1);
+	test_graph(d1);
+
+	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
+	//test1_aux(d2);
+	test_graph(d2);
+
+	slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa3.txt");
+	//test1_aux(d3);
+	test_graph(d3);
+
+	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa4.txt");
+	//test1_aux(d4);
+	test_graph(d4);
+
+	slarx::DFA d5("D:\\dev\\c++\\slarx\\slarx\\Tests\\aut1.txt");
+	test_graph(d5);
+}
+
 int main(int argc, char* argv[])
 {
 	//test_dfa();
-	test_nfa();
+	//test_nfa();
+	test_all();
 
 	char c;
 	std::cin >> c;
