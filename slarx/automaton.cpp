@@ -6,10 +6,11 @@
 #include <utility>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 namespace slarx
 {
-	std::set<Identifier> DFA::active_automata_ = std::set<Identifier>();
+	std::set<Automaton*> Automaton::active_automata_ = std::set<Automaton*>();
 	uint32_t Automaton::last_assigned_id_ = 0;
 	
 	State::State(std::string& source)
@@ -75,15 +76,43 @@ namespace slarx
 		}
 	}
 
-	Identifier Automaton::GetIdentifier()
+	Identifier Automaton::CreateIdentifier()
 	{
 		last_assigned_id_++;
 		return Identifier(last_assigned_id_);
 	}
 
-	const std::set<Identifier>& Automaton::ListIndentifiers()
+	const std::set<int> Automaton::ListActiveAutomataIndentifiers()
 	{
-		return active_automata_;
+		std::set<int> active_automata_ids;
+		for(auto automaton : GetActiveAutomata())
+		{
+			active_automata_ids.insert(automaton->GetIdentifier().GetValue());
+		}
+		return active_automata_ids;
+	}
+
+	void Automaton::PrintActiveAutomataIdentifiers()
+	{
+		auto active_ids = Automaton::ListActiveAutomataIndentifiers(); 
+		for(auto i : active_ids) 
+		{
+			std::cout << i << ' '; 
+		}
+		std::cout << std::endl;
+	}
+
+	const Automaton* Automaton::GetAutomatonByIdentifier(uint32_t id)
+	{
+		auto iter = std::find_if(active_automata_.begin(), active_automata_.end(), [&id](Automaton* a){ return (a->GetIdentifier().GetValue() == id); });
+		if(iter != active_automata_.end())
+		{
+			return *iter;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	bool Alphabet::ReadAlphabet(const std::string& source)

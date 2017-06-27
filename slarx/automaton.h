@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 namespace slarx
 {
@@ -20,6 +21,8 @@ namespace slarx
 		Identifier& operator=(const Identifier& other) = delete;
 		Identifier(Identifier&& other){ swap(*this, other); }
 		~Identifier() = default;
+
+		bool operator<(const Identifier& other) const { return id_ < other.id_; }
 
 		friend void swap(Identifier& a, Identifier& b) noexcept;
 	private:
@@ -84,23 +87,30 @@ namespace slarx
 		static constexpr char* kNFAType(){ return "NFA"; }
 		static constexpr char* kEpsilonNFAType(){ return "ENFA"; }
 
-		Automaton() = default;
+		static std::set<Automaton*>& GetActiveAutomata() { return active_automata_; }
+		// Retrieves a pointer to the automaton with specified id or nullptr if it is not active
+		static const Automaton* GetAutomatonByIdentifier(uint32_t id);
+
+		Automaton() {  }
 		// TODO - Test this
-		Automaton(const Automaton& other) : id_(Automaton::GetIdentifier()), number_of_states_(other.number_of_states_), 
+		Automaton(const Automaton& other) : id_(Automaton::CreateIdentifier()), number_of_states_(other.number_of_states_),
 											alphabet_(other.alphabet_), start_state_(other.start_state_), 
 											accepting_states_(other.accepting_states_)  { }
 		Automaton(uint32_t&& number_of_states, Alphabet&& alphabet, 
-				  State&& start_state, std::set<State>&& accepting_states) : id_(GetIdentifier()), number_of_states_(number_of_states),
+				  State&& start_state, std::set<State>&& accepting_states) : id_(CreateIdentifier()), number_of_states_(number_of_states),
 																			alphabet_(alphabet), start_state_(start_state), accepting_states_(accepting_states) { }
-		virtual ~Automaton() = default;
+		virtual ~Automaton() { }
 		// Returns a std::set containing the identifiers of all currently availiable Automata
-		static const std::set<Identifier>& ListIndentifiers();
+		static const std::set<int> ListActiveAutomataIndentifiers();
+		// Prints the contents of ListActiveAutomataIndentifiers() to stdout
+		static void PrintActiveAutomataIdentifiers();
+		
 		// Reads information for an Automaton from the file located at path 
 		virtual bool ReadFromFile(const std::string& path) = 0;
 		// Prints all transitions of the Automaton to target std::ostream
 		virtual void PrintTransitions(std::ostream& output_stream) const = 0;
 		// Exports the Automaton to a .at file at location path
-		virtual void Export(std::string& path) const = 0;
+		virtual void Export(const std::string& path) const = 0;
 
 		// Returns true if word is in the automaton's language and false otherwise
 		virtual bool Recognize(std::string& word) const = 0;
@@ -108,6 +118,8 @@ namespace slarx
 		virtual bool IsLanguageEmpty() const = 0;
 		virtual bool IsLanguageInfinite() const = 0;
 
+		uint32_t GetNumberOfStates() const { return number_of_states_; }
+		const Identifier& GetIdentifier() const { return id_; }
 		uint32_t Size() const { return number_of_states_; }
 		const Alphabet& GetAlphabet() const { return alphabet_; }
 		const std::set<char>& GetAlphabetCharacters() const { return alphabet_.GetCharacters(); }
@@ -120,13 +132,15 @@ namespace slarx
 	protected:
 		// Returns an identifier and increments last_assigned_id_
 		// Should be used only when constructing a new Automaton
-		static Identifier GetIdentifier();
+		static Identifier CreateIdentifier();
 		bool ReadAlphabet(std::string& source){ return alphabet_.ReadAlphabet(source); }
 		void SetNumberOfStates(uint32_t number){ number_of_states_ = number; }
 		void SetStartState(State state) { start_state_ = state; }
 		void SetAcceptingStates(std::set<State> accepting){ accepting_states_ = std::move(accepting); }
+		void ReportAutomatonWasCreated(){ std::cout << "Automaton with ID: " << id_.GetValue() << " was created!" << std::endl; }
 
 	private:
+		static std::set<Automaton*> active_automata_;
 		// ID number, which will be assigned to next created Automaton
 		static uint32_t last_assigned_id_;
 		Identifier id_;

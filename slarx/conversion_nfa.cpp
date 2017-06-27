@@ -87,8 +87,6 @@ namespace slarx
 		}
 
 		*this = ConversionNFA(number_of_states, alphabet, start_state, accepting_states, transition_table);
-
-		Debug("Sucessfully read NFA!");
 		
 		return true;
 	}
@@ -104,100 +102,6 @@ namespace slarx
 			}
 		}
 	}
-
-	//DFA ConversionNFA::ToDFA() //const
-	//{
-	//	EpsilonCloseNFA();
-
-	//	Alphabet dfa_alphabet = GetAlphabet();
-	//	std::set<std::set<State> > dfa_states;
-	//	dfa_states.insert(std::set<State>{GetStartState()}); // Insert start state
-	//	dfa_states.insert(std::set<State>()); // Insert error state
-
-	//	for(auto powerset_state : dfa_states)
-	//	{
-	//		for(char c : GetAlphabet().GetCharacters())
-	//		{
-	//			std::set<State> new_state;
-	//			for(State s : powerset_state)
-	//			{
-	//				auto transition = transition_table_.GetTransition(s, c);
-	//				new_state.insert(transition.begin(), transition.end());
-	//			}
-	//			dfa_states.insert(new_state);
-	//		}
-	//	}
-	//	// TODO: Should find a way to merge this part and analogous part in EpsilonCloseNFA()
-
-	//	std::vector<std::set<State> > dfa_states_vector(dfa_states.begin(), dfa_states.end());
-	//	// Find position of start state
-	//	State dfa_start_state = State(std::find(dfa_states_vector.begin(), dfa_states_vector.end(), std::set<State>{GetStartState()}) - dfa_states_vector.begin());
-	//	State dfa_error_state = State(std::find(dfa_states_vector.begin(), dfa_states_vector.end(), std::set<State>()) - dfa_states_vector.begin());
-	//	DFATransitionTable dfa_transition_table(dfa_states.size(), dfa_alphabet);
-
-	//	for(int i = 0; i < dfa_states_vector.size(); ++i)
-	//	{
-	//		for(int j = i; j < dfa_states_vector.size(); ++j)
-	//		{
-	//			for(char c : GetAlphabet().GetCharacters())
-	//			{
-	//				std::set<State> i_to_j_transition;
-	//				for(State x : dfa_states_vector[ i ])
-	//				{
-	//					auto transition = transition_table_.GetTransition(x, c);
-	//					i_to_j_transition.insert(transition.begin(), transition.end());
-	//				}
-	//				if(std::equal(dfa_states_vector[ j ].begin(), dfa_states_vector[ j ].end(), i_to_j_transition.begin(), i_to_j_transition.end()))
-	//				{
-	//					dfa_transition_table.AddTransition(State(i), c, State(j));
-	//				}
-
-	//				if(i != j)
-	//				{
-	//					std::set<State> j_to_i_transition;
-	//					for(State y : dfa_states_vector[ j ])
-	//					{
-	//						auto transition = transition_table_.GetTransition(y, c);
-	//						j_to_i_transition.insert(transition.begin(), transition.end());
-	//					}
-	//					if(std::equal(dfa_states_vector[ i ].begin(), dfa_states_vector[ i ].end(), j_to_i_transition.begin(), j_to_i_transition.end()))
-	//					{
-	//						dfa_transition_table.AddTransition(State(j), c, State(i));
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-
-	//	for(int i = 0; i < dfa_states_vector.size(); ++i)
-	//	{
-	//		for(char c : GetAlphabet().GetCharacters())
-	//		{
-	//			// If no transition from state i on c, it must go to error state
-	//			if(dfa_transition_table.GetTransition(State(i), c) == State())
-	//			{
-	//				dfa_transition_table.AddTransition(State(i), c, dfa_error_state);
-	//			}
-	//		}
-	//	}
-
-	//	std::set<State> dfa_accepting_states;
-	//	for(int i = 0; i < dfa_states_vector.size(); ++i)
-	//	{
-	//		std::vector<State> intersection;
-	//		std::set_intersection(dfa_states_vector[ i ].begin(), dfa_states_vector[ i ].end(),
-	//							  GetAcceptingStates().begin(), GetAcceptingStates().end(),
-	//							  std::back_inserter(intersection));
-
-	//		if(intersection.size() > 0)
-	//			dfa_accepting_states.insert(State(i));
-	//	}
-
-	//	uint32_t dfa_number_of_states = dfa_states.size();
-
-	//	return DFA(std::move(dfa_number_of_states), std::move(dfa_alphabet), std::move(dfa_start_state)
-	//			   ,std::move(dfa_accepting_states), std::move(dfa_transition_table));
-	//}
 
 	DFA ConversionNFA::ToDFA()
 	{
@@ -295,93 +199,7 @@ namespace slarx
 		uint32_t dfa_number_of_states = dfa_states.size();
 
 		return DFA(std::move(dfa_number_of_states), std::move(dfa_alphabet), std::move(dfa_start_state)
-				   ,std::move(dfa_accepting_states), std::move(dfa_transition_table));
-	}
-
-	void ConversionNFA::EpsilonCloseNFA()
-	{
-		// TODO: make it a bit faster like ToDFA()
-		std::set<std::set<State> > epsilon_closed_states;
-		epsilon_closed_states.insert(EpsilonClosure(GetStartState()));
-		Alphabet updated_alphabet = GetAlphabet();
-		updated_alphabet.RemoveCharacter(kEpsilon);
-
-		for(auto powerset_state : epsilon_closed_states)
-		{
-			for(char c : updated_alphabet.GetCharacters())
-			{
-				std::set<State> new_state;
-				for(State s : powerset_state)
-				{
-					auto transition = transition_table_.GetTransition(s, c);
-					new_state.insert(transition.begin(), transition.end());
-				}
-				new_state = EpsilonClosure(new_state);
-				epsilon_closed_states.insert(new_state);
-			}
-		}
-
-		std::vector<std::set<State> > epsilon_closed_states_vector(epsilon_closed_states.begin(), epsilon_closed_states.end());
-		State updated_start_state = State(std::find(epsilon_closed_states_vector.begin(), epsilon_closed_states_vector.end(), EpsilonClosure(GetStartState())) - epsilon_closed_states_vector.begin());
-
-		ConversionNFATransitionTable updated_transition_table(epsilon_closed_states.size(), updated_alphabet);
-
-		// If there is a transition from any state of the the epsilon closed state i 
-		// to any state of the epsilon closed state j on char c
-		// we add (i, c, j) to the updated transition table
-		for(int i = 0; i < epsilon_closed_states_vector.size(); ++i)
-		{
-			for(int j = i; j < epsilon_closed_states_vector.size(); ++j)
-			{
-				for(char c : updated_alphabet.GetCharacters())
-				{
-					std::set<State> i_to_j_transition;
-					for(State x : epsilon_closed_states_vector[ i ])
-					{
-							auto transition = transition_table_.GetTransition(x, c);
-							i_to_j_transition.insert(transition.begin(), transition.end());
-					}
-					if(std::equal(i_to_j_transition.begin(), i_to_j_transition.end(), epsilon_closed_states_vector[ j ].begin(), epsilon_closed_states_vector[ j ].end()))
-					{
-						updated_transition_table.AddTransition(State(i), c, State(j));
-					}
-
-					if(i != j)
-					{
-						std::set<State> j_to_i_transition;
-						for(State y : epsilon_closed_states_vector[ j ])
-						{
-							auto transition = transition_table_.GetTransition(y, c);
-							j_to_i_transition.insert(transition.begin(), transition.end());
-						
-						}
-						if(std::equal(j_to_i_transition.begin(), j_to_i_transition.end(), epsilon_closed_states_vector[ i ].begin(), epsilon_closed_states_vector[ i ].end()))
-						{
-							updated_transition_table.AddTransition(State(j), c, State(i));
-						}
-					}
-				}
-				
-			}
-		}
-
-		std::set<State> updated_accepting_states;
-		for(int i = 0; i < epsilon_closed_states_vector.size(); ++i)
-		{
-			std::vector<State> intersection;
-			std::set_intersection(epsilon_closed_states_vector[i].begin(), epsilon_closed_states_vector[i].end(),
-								  GetAcceptingStates().begin(), GetAcceptingStates().end(),
-								  std::back_inserter(intersection));
-
-			if(intersection.size() > 0)
-				updated_accepting_states.insert(State(i));
-		}
-
-		SetNumberOfStates(epsilon_closed_states.size());
-		SetStartState(State(0));
-		SetAlphabet(updated_alphabet);
-		SetAcceptingStates(std::move(updated_accepting_states));
-		SetTransitionTable(std::move(updated_transition_table));
+				   ,std::move(dfa_accepting_states), std::move(dfa_transition_table), true);
 	}
 
 	std::set<State> ConversionNFA::EpsilonClosure(State state)
