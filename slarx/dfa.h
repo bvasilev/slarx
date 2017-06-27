@@ -48,17 +48,19 @@ namespace slarx
 	public:
 		// Reads a DFA from a file located at path
 		DFA(const std::string& path);
-		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { /*ReportAutomatonWasCreated();*/ /*GetActiveAutomata().insert(std::make_shared<DFA>(this));*/ }
+		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { }
 		// Constructor which "cannibalizes" its arguments. Should be used when reading a DFA to ensure that there is sufficient memory before assigning any members.
 		DFA(uint32_t&& number_of_states, Alphabet&& alphabet, State&& start_state, 
 			std::set<State>&& accepting_states, DFATransitionTable&& transition_table, bool report_automaton_was_created) :
 			Automaton(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states)), transition_table_(transition_table) 
-		{ if(report_automaton_was_created) ReportAutomatonWasCreated(); /*GetActiveAutomata().insert(std::make_shared<DFA>(this));*/ }
+		{ if(report_automaton_was_created) ReportAutomatonWasCreated(); }
 		
-		DFA(DFA&& other, bool report_automaton_was_created) { swap(*this, other); if(report_automaton_was_created) ReportAutomatonWasCreated();  /*GetActiveAutomata().insert(std::make_shared<DFA>(this));*/ }
+		DFA(DFA&& other, bool report_automaton_was_created) { swap(*this, other); if(report_automaton_was_created) ReportAutomatonWasCreated(); }
 		DFA& operator=(DFA other){ swap(*this, other); return *this; }
 		~DFA() = default;
 		
+		static void CreateAutomaton(const std::string& path){ new DFA(path); }
+
 		bool operator<(const DFA& other) const { return (GetIdentifier().GetValue() < other.GetIdentifier().GetValue()); }
 		// Reads information for an Automaton from the file located at path 
 		virtual bool ReadFromFile(const std::string& path) override;

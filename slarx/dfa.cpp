@@ -80,7 +80,7 @@ namespace slarx
 	DFA::DFA(const std::string& path)
 	{
 		ReadFromFile(path);
-//		GetActiveAutomata().insert(std::make_shared<DFA>(this));
+		GetActiveAutomata().insert(this);
 	}
 
 	bool DFA::ReadFromFile(const std::string& path)
