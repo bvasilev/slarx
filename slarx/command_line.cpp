@@ -49,43 +49,51 @@ namespace slarx
 	}
 	void PerfromCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
+		bool success;
 		switch(DetermineCommand(command))
 		{
 			case Command::kOpen:
-				OpenCommand(command, active_automata);
+				success = OpenCommand(command, active_automata);
 				break;
 			case Command::kList:
-				ListCommand(command, active_automata);
+				success = ListCommand(command, active_automata);
 				break;
 			case Command::kPrint:
-				PrintCommand(command, active_automata);
+				success = PrintCommand(command, active_automata);
 				break;
 			case Command::kSave:
-				SaveCommand(command, active_automata);
+				success = SaveCommand(command, active_automata);
 				break;
 			case Command::kIsEmpty:
-				IsEmptyCommand(command, active_automata);
+				success = IsEmptyCommand(command, active_automata);
 				break;
 			case Command::kRecognize:
-				RecognizeCommand(command, active_automata);
+				success = RecognizeCommand(command, active_automata);
 				break;
 			case Command::kUnion:
-				UnionCommand(command, active_automata);
+				success = UnionCommand(command, active_automata);
 				break;
 			case Command::kConcatenation:
-				ConcatenationCommand(command, active_automata);
+				success = ConcatenationCommand(command, active_automata);
 				break;
 			case Command::kKleeny:
-				KleenyClosureCommand(command, active_automata);
+				success = KleenyClosureCommand(command, active_automata);
+				break;
+			case Command::kKleenyPositive:
+				success = KleenyPositiveClosureCommand(command, active_automata);
 				break;
 			case Command::kInfinite:
-				IsInfiniteCommand(command, active_automata);
+				success = IsInfiniteCommand(command, active_automata);
 				break;
 			case Command::kExit:
+				success = true;
 				break;
 			default:
+				success = true;
 				cout << "Invalid command!" << endl << endl;
 		}
+		if(!success)
+			cout << "Command failed." << endl << endl;
 	}
 
 	Command DetermineCommand(const std::string& command)
@@ -111,6 +119,8 @@ namespace slarx
 			return Command::kConcatenation;
 		else if(beg == kKleeny)
 			return Command::kKleeny;
+		else if(beg == kKleenyPositive)
+			return Command::kKleenyPositive;
 		else if(beg == kExit)
 			return Command::kExit;
 		else if(beg == kInfinite)
@@ -142,21 +152,42 @@ namespace slarx
 		return id;
 	}
 
-	void OpenCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool OpenCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::string file_path = ExtractFilePath(command);
 		if(!file_path.empty())
-			active_automata.insert(new DFA(file_path));
+		{
+			try
+			{
+				active_automata.insert(new DFA(file_path));
+			}
+			catch(std::invalid_argument e)
+			{
+				cout << e.what() << endl;
+				return false;
+			}
+		}
+			
 		cout << endl;
+		return true;
 	}
-	void ListCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool ListCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		PrintActiveAutomataIdentifiers(active_automata);
 		cout << endl;
+		return true;
 	}
-	void PrintCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool PrintCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
 		{
@@ -166,12 +197,22 @@ namespace slarx
 		else
 		{
 			cout << "Automaton not found!" << endl << endl;
+			return false;
 		}
+		return true;
 	}
-	void SaveCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool SaveCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::stringstream s(command);
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		std::string file_path = ExtractFilePath(command);
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
@@ -184,16 +225,26 @@ namespace slarx
 			else
 			{
 				cout << "Invalid file path" << endl << endl;
+				return false;
 			}
 		}
 		else
 		{
 			cout << "No such DFA!" << endl << endl;
 		}
+		return true;
 	}
-	void IsEmptyCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool IsEmptyCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
 		{
@@ -210,13 +261,24 @@ namespace slarx
 		else
 		{
 			cout << "Automaton not found!" << endl << endl;
+			return false;
 		}
 		cout << endl;
+		return true;
 	}
 
-	void IsInfiniteCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool IsInfiniteCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
+
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
 		{
@@ -233,16 +295,28 @@ namespace slarx
 		else
 		{
 			cout << "Automaton not found!" << endl << endl;
+			return false;
 		}
 		cout << endl;
+		return true;
 	}
 
-	void RecognizeCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool RecognizeCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::stringstream s(command);
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		std::string text;
 		s >> text; s >> text; s >> text; // Ignore command text and id
+		if(s.fail())
+			text.clear();
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
 		{
@@ -258,17 +332,28 @@ namespace slarx
 		else
 		{
 			cout << "Automaton not found!" << endl;
+			return false;
 		}
 		cout << endl;
+		return true;
 	}
-	void UnionCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool UnionCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::stringstream s(command);
 		std::string text;
 		s >> text; s >> text;
-		uint32_t id1 = IntegerParse(text)[0];
-		s >> text;
-		uint32_t id2 = IntegerParse(text)[0];
+		uint32_t id1;
+		uint32_t id2;
+		try
+		{
+			id1 = IntegerParse(text)[ 0 ];
+			s >> text;
+			id2 = IntegerParse(text)[ 0 ];
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		const DFA* d1 = GetAutomatonByID(id1, active_automata);
 		const DFA* d2 = GetAutomatonByID(id2, active_automata);
 		if(d1 != nullptr && d2 != nullptr)
@@ -279,19 +364,33 @@ namespace slarx
 		else
 		{
 			cout << "One or both of these automata don't exist" << endl;
+			return false;
 		}
 
 		cout << endl;
+		return true;
 	}
 
-	void ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::stringstream s(command);
 		std::string text;
-		s >> text; s >> text;
-		uint32_t id1 = IntegerParse(text)[ 0 ];
 		s >> text;
-		uint32_t id2 = IntegerParse(text)[ 0 ];
+		uint32_t id1;
+		s >> text;
+		uint32_t id2;
+		try
+		{
+			id1 = IntegerParse(text)[ 0 ];
+			cout << id1 << endl;
+			s >> text;
+			id2 = IntegerParse(text)[ 0 ];
+			cout << id2 << endl;
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		const DFA* d1 = GetAutomatonByID(id1, active_automata);
 		const DFA* d2 = GetAutomatonByID(id2, active_automata);
 		if(d1 != nullptr && d2 != nullptr)
@@ -302,14 +401,24 @@ namespace slarx
 		else
 		{
 			cout << "One or both of these automata don't exist" << endl;
+			return false;
 		}
 
 		cout << endl;
+		return true;
 	}
 
-	void KleenyClosureCommand(const std::string& command, std::set<DFA*>& active_automata)
+	bool KleenyClosureCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
-		uint32_t id = ExtractIdFromCommand(command);
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		}
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
 		const DFA* d = GetAutomatonByID(id, active_automata);
 		if(d != nullptr)
 		{
@@ -319,7 +428,36 @@ namespace slarx
 		else
 		{
 			cout << "Automaton does not exist" << endl;
+			return false;
 		}
 		cout << endl;
+		return true;
+	}
+
+	bool KleenyPositiveClosureCommand(const std::string& command, std::set<DFA*>& active_automata)
+	{
+		uint32_t id;
+		try
+		{
+			id = ExtractIdFromCommand(command);
+		} 
+		catch(std::invalid_argument)
+		{
+			return false;
+		}
+
+		const DFA* d = GetAutomatonByID(id, active_automata);
+		if(d != nullptr)
+		{
+			active_automata.insert(new DFA(AutomataConcatenation(*d, AutomataKleenyStar(*d))));
+			cout << "Kleeny positive closure successful!" << endl;
+		}
+		else
+		{
+			cout << "Automaton does not exist" << endl;
+			return false;
+		}
+		cout << endl;
+		return true;
 	}
 }

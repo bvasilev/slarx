@@ -113,6 +113,11 @@ namespace slarx
 	bool DFA::ReadDFA(const std::string& path)
 	{
 		std::ifstream input_file(path);
+		if(input_file.fail())
+		{
+			throw(std::invalid_argument("Bad file specified for DFA read!"));
+			return false;
+		}
 		std::string line;
 
 		uint32_t number_of_states;

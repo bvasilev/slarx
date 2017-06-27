@@ -234,11 +234,17 @@ namespace slarx
 	std::set<State> ConversionNFA::EpsilonClosure(const std::set<State>& state)
 	{
 		std::set<State> epsilon_closure(state.begin(), state.end());
-		for(State s : epsilon_closure)
+		auto new_epsilon_closure = epsilon_closure;
+		do
 		{
-			auto s_epsilon_closure = EpsilonClosure(s);
-			epsilon_closure.insert(s_epsilon_closure.begin(), s_epsilon_closure.end());
-		}
+			epsilon_closure = new_epsilon_closure;
+			for(State s : epsilon_closure)
+			{
+				auto s_epsilon_closure = EpsilonClosure(s);
+				new_epsilon_closure.insert(s_epsilon_closure.begin(), s_epsilon_closure.end());
+			}
+		}while(new_epsilon_closure != epsilon_closure);
+		
 		return epsilon_closure;
 	}
 }
