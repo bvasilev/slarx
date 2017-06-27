@@ -1,6 +1,11 @@
-<Automaton type>
-<Number of states>
-<Alphabet>
+<Automaton type> (DFA/NFA/ENFA/Automaton)
+
+<Number of states> (uint32)
+<Alphabet> (string of space-separated characters)
+
 <Start state>
+ (uint32)
 <Final states>
 
+ (string of space-separated uint32)
+<Transitions> (each line contains a single transition in the format <from> <on> <to>, where from and on are uint32 and on is char) 

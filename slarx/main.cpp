@@ -1,3 +1,6 @@
+// Compiled using Microsoft Visual Studio 2017 Community Edition
+// Project by Bozhidar Vasilev
+
 #include <iostream>
 #include <set>
 #include <string>
