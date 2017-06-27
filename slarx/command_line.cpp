@@ -72,6 +72,9 @@ namespace slarx
 			case Command::kUnion:
 				UnionCommand(command, active_automata);
 				break;
+			case Command::kInfinite:
+				IsInfiniteCommand(command, active_automata);
+				break;
 			case Command::kExit:
 				break;
 			default:
@@ -100,6 +103,8 @@ namespace slarx
 			return Command::kUnion;
 		else if(beg == kExit)
 			return Command::kExit;
+		else if(beg == kInfinite)
+			return Command::kInfinite;
 		else
 			return Command::kInvalid;
 	}
@@ -198,6 +203,30 @@ namespace slarx
 		}
 		cout << endl;
 	}
+
+	void IsInfiniteCommand(const std::string& command, std::set<DFA*>& active_automata)
+	{
+		uint32_t id = ExtractIdFromCommand(command);
+		const DFA* d = GetAutomatonByID(id, active_automata);
+		if(d != nullptr)
+		{
+			if(d->IsLanguageInfinite())
+			{
+				cout << "Language is infinite" << endl;
+			}
+			else
+			{
+				cout << "Language is finite" << endl;
+			}
+			cout << endl;
+		}
+		else
+		{
+			cout << "Automaton not found!" << endl << endl;
+		}
+		cout << endl;
+	}
+
 	void RecognizeCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
 		std::stringstream s(command);
@@ -209,11 +238,11 @@ namespace slarx
 		{
 			if(d->Recognize(text))
 			{
-				cout << "The word is in the language!" << endl;
+				cout << "Yes!" << endl;
 			}
 			else
 			{
-				cout << "The word is not in the language." << endl;
+				cout << "No." << endl;
 			}
 		}
 		else
@@ -244,5 +273,6 @@ namespace slarx
 
 		cout << endl;
 	}
+
 	void ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata);
 }

@@ -87,12 +87,7 @@ namespace slarx
 		static constexpr char* kNFAType(){ return "NFA"; }
 		static constexpr char* kEpsilonNFAType(){ return "ENFA"; }
 
-		static std::set<Automaton*>& GetActiveAutomata() { return active_automata_; }
-		// Retrieves a pointer to the automaton with specified id or nullptr if it is not active
-		static const Automaton* GetAutomatonByIdentifier(uint32_t id);
-
 		Automaton() {  }
-		// TODO - Test this
 		Automaton(const Automaton& other) : id_(Automaton::CreateIdentifier()), number_of_states_(other.number_of_states_),
 											alphabet_(other.alphabet_), start_state_(other.start_state_), 
 											accepting_states_(other.accepting_states_)  { }
@@ -100,10 +95,6 @@ namespace slarx
 				  State&& start_state, std::set<State>&& accepting_states) : id_(CreateIdentifier()), number_of_states_(number_of_states),
 																			alphabet_(alphabet), start_state_(start_state), accepting_states_(accepting_states) { }
 		virtual ~Automaton() { }
-		// Returns a std::set containing the identifiers of all currently availiable Automata
-		static const std::set<int> ListActiveAutomataIndentifiers();
-		// Prints the contents of ListActiveAutomataIndentifiers() to stdout
-		static void PrintActiveAutomataIdentifiers();
 		
 		// Reads information for an Automaton from the file located at path 
 		virtual bool ReadFromFile(const std::string& path) = 0;
@@ -140,7 +131,6 @@ namespace slarx
 		void ReportAutomatonWasCreated(){ std::cout << "Automaton with ID: " << id_.GetValue() << " was created!" << std::endl; }
 
 	private:
-		static std::set<Automaton*> active_automata_;
 		// ID number, which will be assigned to next created Automaton
 		static uint32_t last_assigned_id_;
 		Identifier id_;

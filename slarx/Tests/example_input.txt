@@ -1,0 +1,11 @@
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt"
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt"
+list
+save 1 "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1_ex.txt"
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1_ex.txt"
+empty 1
+recognize 1 abab
+recognize 1 abb
+union 1 2
+inf 3
+print 4
