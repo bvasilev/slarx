@@ -7,6 +7,7 @@
 #include "utility.h"
 #include "dfa.h"
 #include "graph.h"
+#include "automata_set_operations.h"
 
 #endif // SLARX_H_INCLUDED
 

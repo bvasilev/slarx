@@ -65,11 +65,25 @@ void test_all()
 	test_graph(d5);
 }
 
+void test_operations()
+{
+	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
+	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
+
+	slarx::DFA un1 = AutomataUnion(d1, d2);
+	test1_aux(un1);
+
+	/*slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa3.txt");
+	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa4.txt");
+	slarx::DFA d5("D:\\dev\\c++\\slarx\\slarx\\Tests\\aut1.txt");*/
+}
+
 int main(int argc, char* argv[])
 {
 	//test_dfa();
 	//test_nfa();
-	test_all();
+	//test_all();
+	test_operations();
 
 	char c;
 	std::cin >> c;
@@ -123,8 +137,8 @@ void test1_aux(slarx::DFA& d)
 
 	d.PrintTransitions(std::cout);
 	std::cout << "Language: " << d.IsLanguageEmpty() << std::endl;
-	test_recognize(d, test_set);
-	PrintGraph(d.GetTransitionTable().GetGraph());
+	//test_recognize(d, test_set);
+	//PrintGraph(d.GetTransitionTable().GetGraph());
 
 	std::cout << std::endl << std::endl;
 }

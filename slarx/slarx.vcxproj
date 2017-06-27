@@ -111,6 +111,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="automata_set_operations.cpp" />
     <ClCompile Include="automaton.cpp" />
     <ClCompile Include="conversion_nfa.cpp" />
     <ClCompile Include="dfa.cpp" />
@@ -119,6 +120,7 @@
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="automata_set_operations.h" />
     <ClInclude Include="automaton.h" />
     <ClInclude Include="conversion_nfa.h" />
     <ClInclude Include="dfa.h" />

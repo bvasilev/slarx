@@ -29,6 +29,7 @@ namespace slarx
 		// Returns the transition if it exists, or an uninitialized state (i.e. which has value_ = State::kUninitialized)
 		const std::set<State> GetTransition(State from, char on) const;
 		void SetAlphabet(const Alphabet& alphabet) { conversion_nfa_alphabet_ = alphabet; }
+		const TransitionTable& GetTransitions() const { return transitions_; }
 		friend void swap(ConversionNFATransitionTable& a, ConversionNFATransitionTable& b) noexcept;
 
 	private:
@@ -60,6 +61,7 @@ namespace slarx
 		const Alphabet& GetAlphabet() const { return alphabet_; }
 		State GetStartState() const { return start_state_; }
 		const std::set<State>& GetAcceptingStates() const { return accepting_states_; }
+		const ConversionNFATransitionTable& GetTransitionTable() const { return transition_table_; }
 		// TODO - Decide if necessary
 		friend void swap(ConversionNFA& a, ConversionNFA& b) noexcept;
 
@@ -89,6 +91,8 @@ namespace slarx
 		
 		// Produces the epsilon closure of a state
 		std::set<State> EpsilonClosure(State state);
+		// Produces epsilon closure of a composite state
+		std::set<State> ConversionNFA::EpsilonClosure(const std::set<State>& state);
 	};
 }
 
