@@ -47,46 +47,66 @@ void test_all()
 {
 	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
 	//test1_aux(d1);
-	test_graph(d1);
+	//test_graph(d1);
 
 	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
 	//test1_aux(d2);
-	test_graph(d2);
+	//test_graph(d2);
 
 	slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa3.txt");
 	//test1_aux(d3);
-	test_graph(d3);
+	//test_graph(d3);
 
 	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa4.txt");
 	//test1_aux(d4);
-	test_graph(d4);
+	//test_graph(d4);
 
 	slarx::DFA d5("D:\\dev\\c++\\slarx\\slarx\\Tests\\aut1.txt");
-	test_graph(d5);
+	//test_graph(d5);
+
+//	slarx::Automaton::PrintActiveAutomataIdentifiers();
 }
 
 void test_operations()
 {
 	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
 	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
-
+	slarx::DFA n1("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa1.txt");
+	slarx::DFA n2("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa2.txt");
 	slarx::DFA un1 = AutomataUnion(d1, d2);
-	test1_aux(un1);
+	slarx::DFA un2 = AutomataUnion(n1, n2);
+	//test1_aux(un1);
+	//test1_aux(un2);
+
+//	slarx::Automaton::PrintActiveAutomataIdentifiers();
 
 	/*slarx::DFA d3("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa3.txt");
 	slarx::DFA d4("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa4.txt");
 	slarx::DFA d5("D:\\dev\\c++\\slarx\\slarx\\Tests\\aut1.txt");*/
+//	slarx::Automaton::GetAutomatonByIdentifier(1)->PrintTransitions(cout);
+}
+
+void test_export()
+{
+	slarx::DFA d1("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1.txt");
+	slarx::DFA d2("D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa2.txt");
+	slarx::DFA n1("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa1.txt");
+	slarx::DFA n2("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa2.txt");
+	slarx::DFA un1 = AutomataUnion(d1, d2);
+	slarx::DFA un2 = AutomataUnion(n1, n2);
+	//d1.PrintTransitions(cout);
+	d1.Export("D:\\dev\\c++\\slarx\\slarx\\Tests\\export_dfa1.txt");
+	slarx::DFA d1_test("D:\\dev\\c++\\slarx\\slarx\\Tests\\export_dfa1.txt");
+	d1_test.PrintTransitions(cout);
+	//n1.PrintTransitions(cout);
+	n1.Export("D:\\dev\\c++\\slarx\\slarx\\Tests\\export_nfa1.txt");
+	//un2.PrintTransitions(cout);
+	un2.Export("D:\\dev\\c++\\slarx\\slarx\\Tests\\export_un1.txt");
 }
 
 int main(int argc, char* argv[])
 {
-	//test_dfa();
-	//test_nfa();
-	//test_all();
-	test_operations();
-
-	char c;
-	std::cin >> c;
+	slarx::Run();
 	
 	return 0;
 }
@@ -119,12 +139,10 @@ void test_nfa()
 	//slarx::DFA n1("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa1.txt");
 
 	slarx::ConversionNFA n2("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa2.txt");
-	n2.EpsilonCloseNFA();
 
 	slarx::DFA d2 = n2.ToDFA();
 
 	slarx::ConversionNFA n3("D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa3.txt");
-	n3.EpsilonCloseNFA();
 
 	slarx::DFA d3 = n3.ToDFA();
 
