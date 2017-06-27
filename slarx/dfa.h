@@ -73,6 +73,7 @@ namespace slarx
 		friend void swap(DFA& a, DFA& b) noexcept;
 
 	private:
+		static std::set<DFA*> active_automata_;
 		// Helper funtion for ReadFromFile. Reads a know DFA directly
 		bool ReadDFA(const std::string& path);
 		// Helper funtion for ReadFromFile. Read an unknown Automaton type or NFA and converts it to a DFA

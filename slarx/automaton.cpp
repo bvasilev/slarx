@@ -9,7 +9,7 @@
 
 namespace slarx
 {
-	std::set<Identifier> Automaton::active_automata_ = std::set<Identifier>();
+	std::set<Identifier> DFA::active_automata_ = std::set<Identifier>();
 	uint32_t Automaton::last_assigned_id_ = 0;
 	
 	State::State(std::string& source)

@@ -127,7 +127,6 @@ namespace slarx
 		void SetAcceptingStates(std::set<State> accepting){ accepting_states_ = std::move(accepting); }
 
 	private:
-		static std::set<Identifier> active_automata_;
 		// ID number, which will be assigned to next created Automaton
 		static uint32_t last_assigned_id_;
 		Identifier id_;

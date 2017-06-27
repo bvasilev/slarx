@@ -9,6 +9,7 @@
 
 namespace slarx
 {
+	std::set<DFA*> DFA::active_automata_ = std::set<DFA*>();
 	void DFATransitionTable::AddTransition(State from, char on, State to)
 	{
 		if(GetTransition(from, on) != State())
