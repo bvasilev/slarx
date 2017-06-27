@@ -9,9 +9,11 @@ namespace slarx
 {
 	ConversionNFA AutomataUnion(const ConversionNFA& a, const ConversionNFA& b);
 	DFA AutomataUnion(const DFA& a, const DFA& b);
-	void AutomataUnion_AUX_AddTransitionsToUnion(ConversionNFATransitionTable& result_transition_table, const ConversionNFA& input_nfa, uint32_t offset);
+	void AddInitialTransitionsToNewTransitionTable(ConversionNFATransitionTable& result_transition_table, const ConversionNFA& input_nfa, uint32_t offset);
 	ConversionNFA AutomataConcatenation(const ConversionNFA& a, const ConversionNFA& b);
-	ConversionNFA AutomataKleenyStar(const ConversionNFA& a, const ConversionNFA& b);
+	DFA AutomataConcatenation(const DFA& a, const DFA& b);
+	ConversionNFA AutomataKleenyStar(const ConversionNFA& a);
+	DFA AutomataKleenyStar(const DFA& a);
 
 	Alphabet AlphabetUnion(const Alphabet& a, const Alphabet& b);
 }

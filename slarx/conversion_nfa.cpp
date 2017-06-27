@@ -111,20 +111,27 @@ namespace slarx
 		Alphabet dfa_alphabet = GetAlphabet();
 		dfa_alphabet.RemoveCharacter(kEpsilon);
 
-		for(auto powerset_state : dfa_states)
+		auto new_dfa_states = dfa_states;
+		do
 		{
-			for(char c : dfa_alphabet.GetCharacters())
+			dfa_states = new_dfa_states;
+			for(auto powerset_state : dfa_states)
 			{
-				std::set<State> new_state;
-				for(State s : powerset_state)
+				for(char c : dfa_alphabet.GetCharacters())
 				{
-					auto transition = transition_table_.GetTransition(s, c);
-					new_state.insert(transition.begin(), transition.end());
+					std::set<State> new_state;
+					//new_state.insert(powerset_state.begin(), powerset_state.end());
+					for(State s : powerset_state)
+					{
+						auto transition = transition_table_.GetTransition(s, c);
+						new_state.insert(transition.begin(), transition.end());
+					}
+					new_state = EpsilonClosure(new_state);
+					new_dfa_states.insert(new_state);
 				}
-				new_state = EpsilonClosure(new_state);
-				dfa_states.insert(new_state);
 			}
-		}
+		}while(new_dfa_states != dfa_states);
+		
 
 		std::vector<std::set<State> > dfa_states_vector(dfa_states.begin(), dfa_states.end());
 		State dfa_start_state = State(std::find(dfa_states_vector.begin(), dfa_states_vector.end(), EpsilonClosure(GetStartState())) - dfa_states_vector.begin());
@@ -147,6 +154,7 @@ namespace slarx
 						auto transition = transition_table_.GetTransition(x, c);
 						i_to_j_transition.insert(transition.begin(), transition.end());
 					}
+					i_to_j_transition = EpsilonClosure(i_to_j_transition);
 					if(std::equal(i_to_j_transition.begin(), i_to_j_transition.end(), dfa_states_vector[ j ].begin(), dfa_states_vector[ j ].end()))
 					{
 						dfa_transition_table.AddTransition(State(i), c, State(j));
@@ -161,6 +169,7 @@ namespace slarx
 							j_to_i_transition.insert(transition.begin(), transition.end());
 
 						}
+						j_to_i_transition = EpsilonClosure(j_to_i_transition);
 						if(std::equal(j_to_i_transition.begin(), j_to_i_transition.end(), dfa_states_vector[ i ].begin(), dfa_states_vector[ i ].end()))
 						{
 							dfa_transition_table.AddTransition(State(j), c, State(i));
@@ -206,12 +215,18 @@ namespace slarx
 	{
 		std::set<State> epsilon_closure;
 		epsilon_closure.insert(state);
-		for(State i : epsilon_closure)
+		std::set<State> epsilon_closure_new(epsilon_closure);
+		do
 		{
-			auto transition = transition_table_.GetTransition(i, kEpsilon);
-			// Set union
-			epsilon_closure.insert(transition.begin(), transition.end());
-		}
+			epsilon_closure = epsilon_closure_new;
+			for(State i : epsilon_closure)
+			{
+				auto transition = transition_table_.GetTransition(i, kEpsilon);
+				// Set union
+				epsilon_closure_new.insert(transition.begin(), transition.end());
+			}
+		}while(epsilon_closure_new != epsilon_closure);
+		
 
 		return epsilon_closure;
 	}

@@ -45,7 +45,7 @@ namespace slarx
 		for(auto i : active_automata)
 			delete i;
 
-		cout << "Goodbye!" << endl;
+		cout << endl << "Goodbye!" << endl;
 	}
 	void PerfromCommand(const std::string& command, std::set<DFA*>& active_automata)
 	{
@@ -72,13 +72,19 @@ namespace slarx
 			case Command::kUnion:
 				UnionCommand(command, active_automata);
 				break;
+			case Command::kConcatenation:
+				ConcatenationCommand(command, active_automata);
+				break;
+			case Command::kKleeny:
+				KleenyClosureCommand(command, active_automata);
+				break;
 			case Command::kInfinite:
 				IsInfiniteCommand(command, active_automata);
 				break;
 			case Command::kExit:
 				break;
 			default:
-				cout << "Invalid command!" << endl;
+				cout << "Invalid command!" << endl << endl;
 		}
 	}
 
@@ -101,6 +107,10 @@ namespace slarx
 			return Command::kRecognize;
 		else if(beg == kUnion)
 			return Command::kUnion;
+		else if(beg == kConcatenation)
+			return Command::kConcatenation;
+		else if(beg == kKleeny)
+			return Command::kKleeny;
 		else if(beg == kExit)
 			return Command::kExit;
 		else if(beg == kInfinite)
@@ -274,5 +284,42 @@ namespace slarx
 		cout << endl;
 	}
 
-	void ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata);
+	void ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata)
+	{
+		std::stringstream s(command);
+		std::string text;
+		s >> text; s >> text;
+		uint32_t id1 = IntegerParse(text)[ 0 ];
+		s >> text;
+		uint32_t id2 = IntegerParse(text)[ 0 ];
+		const DFA* d1 = GetAutomatonByID(id1, active_automata);
+		const DFA* d2 = GetAutomatonByID(id2, active_automata);
+		if(d1 != nullptr && d2 != nullptr)
+		{
+			active_automata.insert(new DFA(AutomataConcatenation(*d1, *d2)));
+			cout << "Concatenation successful!" << endl;
+		}
+		else
+		{
+			cout << "One or both of these automata don't exist" << endl;
+		}
+
+		cout << endl;
+	}
+
+	void KleenyClosureCommand(const std::string& command, std::set<DFA*>& active_automata)
+	{
+		uint32_t id = ExtractIdFromCommand(command);
+		const DFA* d = GetAutomatonByID(id, active_automata);
+		if(d != nullptr)
+		{
+			active_automata.insert(new DFA(AutomataKleenyStar(*d)));
+			cout << "Kleeny closure successful!" << endl;
+		}
+		else
+		{
+			cout << "Automaton does not exist" << endl;
+		}
+		cout << endl;
+	}
 }

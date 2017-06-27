@@ -34,13 +34,13 @@ namespace slarx
 		result_nfa_transition_table.AddTransition(result_nfa_start_state, kEpsilon, State(a.GetStartState().GetValue() + a_offset));
 		result_nfa_transition_table.AddTransition(result_nfa_start_state, kEpsilon, State(b.GetStartState().GetValue() + b_offset));
 
-		AutomataUnion_AUX_AddTransitionsToUnion(result_nfa_transition_table, a, a_offset);
-		AutomataUnion_AUX_AddTransitionsToUnion(result_nfa_transition_table, b, b_offset);
+		AddInitialTransitionsToNewTransitionTable(result_nfa_transition_table, a, a_offset);
+		AddInitialTransitionsToNewTransitionTable(result_nfa_transition_table, b, b_offset);
 		
 		return ConversionNFA(result_nfa_number_of_states, result_nfa_alphabet, result_nfa_start_state, result_nfa_accepting_states, result_nfa_transition_table);
 	}
 
-	void AutomataUnion_AUX_AddTransitionsToUnion(ConversionNFATransitionTable& result_transition_table, const ConversionNFA& input_nfa, uint32_t offset)
+	void AddInitialTransitionsToNewTransitionTable(ConversionNFATransitionTable& result_transition_table, const ConversionNFA& input_nfa, uint32_t offset)
 	{
 		const ConversionNFATransitionTable& input_transition_table = input_nfa.GetTransitionTable();
 		for(int i = 0; i < input_transition_table.GetTransitions().size(); ++i)
@@ -55,8 +55,57 @@ namespace slarx
 			}
 		}
 	}
-	ConversionNFA AutomataConcatenation(const ConversionNFA& a, const ConversionNFA& b);
-	ConversionNFA AutomataKleenyStar(const ConversionNFA& a, const ConversionNFA& b);
+	ConversionNFA AutomataConcatenation(const ConversionNFA& a, const ConversionNFA& b)
+	{
+		uint32_t result_nfa_number_of_states = a.Size() + b.Size();
+		uint32_t a_offset = 0, b_offset = a.Size();
+		Alphabet result_nfa_alphabet = AlphabetUnion(a.GetAlphabet(), b.GetAlphabet());
+		result_nfa_alphabet.AddCharacter(kEpsilon);
+		State result_nfa_start_state = a.GetStartState();
+		std::set<State> result_nfa_accepting_states;
+		for(State fs : b.GetAcceptingStates())
+		{
+			result_nfa_accepting_states.insert(State(fs.GetValue() + b_offset));
+		}
+		ConversionNFATransitionTable result_nfa_transition_table(result_nfa_number_of_states, result_nfa_alphabet);
+		for(State fs : a.GetAcceptingStates())
+		{
+			result_nfa_transition_table.AddTransition(fs, kEpsilon, State(b.GetStartState().GetValue() + b_offset));
+		}
+		AddInitialTransitionsToNewTransitionTable(result_nfa_transition_table, a, a_offset);
+		AddInitialTransitionsToNewTransitionTable(result_nfa_transition_table, b, b_offset);
+
+		return ConversionNFA(result_nfa_number_of_states, result_nfa_alphabet, result_nfa_start_state, result_nfa_accepting_states, result_nfa_transition_table);
+	}
+
+	DFA AutomataConcatenation(const DFA& a, const DFA& b)
+	{
+		return AutomataConcatenation(ConversionNFA(a), ConversionNFA(b)).ToDFA();
+	}
+
+	ConversionNFA AutomataKleenyStar(const ConversionNFA& a)
+	{
+		uint32_t result_nfa_number_of_states = a.Size() + 1;
+		Alphabet result_nfa_alphabet = a.GetAlphabet();
+		result_nfa_alphabet.AddCharacter(kEpsilon);
+		State result_nfa_start_state = State(a.Size());
+		std::set<State> result_nfa_accepting_states;
+		result_nfa_accepting_states.insert(result_nfa_start_state);
+
+		ConversionNFATransitionTable result_nfa_transition_table(result_nfa_number_of_states, result_nfa_alphabet);
+		result_nfa_transition_table.AddTransition(result_nfa_start_state, kEpsilon, a.GetStartState());
+		for(State fs : a.GetAcceptingStates())
+		{
+			result_nfa_transition_table.AddTransition(fs, kEpsilon, result_nfa_start_state);
+		}
+		AddInitialTransitionsToNewTransitionTable(result_nfa_transition_table, a, 0);
+
+		return ConversionNFA(result_nfa_number_of_states, result_nfa_alphabet, result_nfa_start_state, result_nfa_accepting_states, result_nfa_transition_table);
+	}
+	DFA AutomataKleenyStar(const DFA& a)
+	{
+		return AutomataKleenyStar(ConversionNFA(a)).ToDFA();
+	}
 
 
 	Alphabet AlphabetUnion(const Alphabet& a, const Alphabet& b)

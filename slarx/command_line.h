@@ -12,7 +12,7 @@ namespace slarx
 	void PrintActiveAutomataIdentifiers(std::set<DFA*>& s);
 	const DFA* GetAutomatonByID(uint32_t id, std::set<DFA*>& active_automata);
 
-	enum class Command{ kOpen, kList, kPrint, kSave, kIsEmpty, kRecognize, kUnion, kConcatenation, kExit, kInvalid, kInfinite };
+	enum class Command{ kOpen, kList, kPrint, kSave, kIsEmpty, kRecognize, kUnion, kConcatenation, kKleeny, kExit, kInvalid, kInfinite };
 	const std::string kOpen = "open";
 	const std::string kList = "list";
 	const std::string kPrint = "print";
@@ -21,6 +21,7 @@ namespace slarx
 	const std::string kRecognize = "recognize";
 	const std::string kUnion = "union";
 	const std::string kConcatenation = "concat";
+	const std::string kKleeny = "kleeny";
 	const std::string kExit = "exit";
 	const std::string kInfinite = "inf";
 
@@ -37,6 +38,7 @@ namespace slarx
 	void UnionCommand(const std::string& command, std::set<DFA*>& active_automata);
 	void IsInfiniteCommand(const std::string& command, std::set<DFA*>& active_automata);
 	void ConcatenationCommand(const std::string& command, std::set<DFA*>& active_automata);
+	void KleenyClosureCommand(const std::string& command, std::set<DFA*>& active_automata);
 }
 
 #endif // SLARX_COMMAND_LINE_H_INCLUDED
