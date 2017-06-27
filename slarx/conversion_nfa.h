@@ -8,13 +8,16 @@
 #include <set>
 #include <unordered_set>
 #include <memory>
+#include <map>
 
 namespace slarx
 {
+	const char kEpsilon = '~';
+
 	class ConversionNFATransitionTable
 	{
 	public:
-		typedef std::vector<std::unordered_map<char, std::unordered_set<State> > > TransitionTable;
+		typedef std::vector<std::map<char, std::set<State> > > TransitionTable;
 		ConversionNFATransitionTable() = default;
 		ConversionNFATransitionTable(uint32_t automaton_number_of_states, const Alphabet& alphabet) : transitions_(automaton_number_of_states), conversion_nfa_alphabet_(alphabet) { }
 		ConversionNFATransitionTable(const ConversionNFATransitionTable& other) : transitions_(other.transitions_), conversion_nfa_alphabet_(other.conversion_nfa_alphabet_) { }
@@ -24,9 +27,10 @@ namespace slarx
 
 		void AddTransition(State from, char on, State to);
 		// Returns the transition if it exists, or an uninitialized state (i.e. which has value_ = State::kUninitialized)
-		const std::unordered_set<State> GetTransition(State from, char on) const;
+		const std::set<State> GetTransition(State from, char on) const;
 		void SetAlphabet(const Alphabet& alphabet) { conversion_nfa_alphabet_ = alphabet; }
 		friend void swap(ConversionNFATransitionTable& a, ConversionNFATransitionTable& b) noexcept;
+
 	private:
 		TransitionTable transitions_;
 		Alphabet conversion_nfa_alphabet_;
@@ -47,6 +51,7 @@ namespace slarx
 		ConversionNFA(uint32_t number_of_states, const Alphabet& alphabet, State start_state, const std::set<State>& accepting_states, ConversionNFATransitionTable& transition_table) 
 			: number_of_states_(number_of_states), alphabet_(alphabet), start_state_(start_state), accepting_states_(accepting_states), transition_table_(transition_table) { }
 		ConversionNFA(const DFA& dfa);
+		ConversionNFA(const std::string& path) { ReadFromFile(path); }
 		virtual ~ConversionNFA() = default;
 		// Reads information for an Automaton from the file located at path 
 		bool ReadFromFile(const std::string& path);
@@ -58,7 +63,11 @@ namespace slarx
 		// TODO - Decide if necessary
 		friend void swap(ConversionNFA& a, ConversionNFA& b) noexcept;
 
-		DFA ToDFA() const;
+		DFA ToDFA();// const;
+
+		// Should be in private!
+		// Closes the NFA under epsilon transitions.
+		void EpsilonCloseNFA();
 
 	protected:
 		// Returns an identifier and increments last_assigned_id_
@@ -67,6 +76,8 @@ namespace slarx
 		void SetNumberOfStates(uint32_t number) { number_of_states_ = number; }
 		void SetStartState(State state) { start_state_ = state; }
 		void SetAcceptingStates(std::set<State>&& accepting) { accepting_states_ = std::move(accepting); }
+		void SetAlphabet(const Alphabet& alphabet) { alphabet_ = alphabet; }
+		void SetTransitionTable(ConversionNFATransitionTable&& transition_table){ transition_table_ = std::move(transition_table); }
 
 	private:
 		uint32_t number_of_states_;
@@ -74,6 +85,10 @@ namespace slarx
 		State start_state_;
 		std::set<State> accepting_states_;
 		ConversionNFATransitionTable transition_table_;
+
+		
+		// Produces the epsilon closure of a state
+		std::set<State> EpsilonClosure(State state);
 	};
 }
 

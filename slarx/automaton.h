@@ -42,7 +42,7 @@ namespace slarx
 
 		bool operator==(const State& other) const { return value_ == other.value_; }
 		bool operator<(const State& other) const { return value_ < other.value_; }
-
+		bool operator!=(const State& other) const { return !(*this == other); }
 		friend void swap(State& a, State& b) noexcept;
 	private:
 		static const int kUninitialized = -1;
@@ -64,6 +64,7 @@ namespace slarx
 		size_t Size(){ return characters_.size(); }
 		const std::set<char>& GetCharacters() const { return characters_; }
 		void AddCharacter(char c){ characters_.insert(c); }
+		void RemoveCharacter(char c){ characters_.erase(c); }
 
 		friend void swap(Alphabet& a, Alphabet& b) noexcept;
 	private:

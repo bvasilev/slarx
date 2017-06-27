@@ -10,13 +10,14 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <map>
 
 namespace slarx
 {
 	class DFATransitionTable
 	{
 	public:
-		typedef std::vector<std::unordered_map<char, State> > TransitionTable;
+		typedef std::vector<std::map<char, State> > TransitionTable;
 		DFATransitionTable() = default;
 		DFATransitionTable(unsigned dfa_number_of_states, Alphabet& dfa_alphabet) : transitions_(dfa_number_of_states), dfa_alphabet_(dfa_alphabet) { }
 		DFATransitionTable(const DFATransitionTable& other) : transitions_(other.transitions_) { }

@@ -11,7 +11,7 @@ namespace slarx
 {
 	void DFATransitionTable::AddTransition(State from, char on, State to)
 	{
-		if(transitions_[from.GetValue()].find(on) != transitions_[from.GetValue()].end())
+		if(GetTransition(from, on) != State())
 		{
 			throw std::invalid_argument("Attemped to add more than one transition from a State on same character.");
 		}
@@ -171,6 +171,7 @@ namespace slarx
 	{
 		ConversionNFA cnfa;
 		cnfa.ReadFromFile(path);
+		cnfa.ToDFA();
 
 		throw std::domain_error("Function not implemented.");
 		return false;
