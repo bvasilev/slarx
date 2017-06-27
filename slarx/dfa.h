@@ -20,7 +20,7 @@ namespace slarx
 		typedef std::vector<std::map<char, State> > TransitionTable;
 		DFATransitionTable() = default;
 		DFATransitionTable(unsigned dfa_number_of_states, Alphabet& dfa_alphabet) : transitions_(dfa_number_of_states), dfa_alphabet_(dfa_alphabet) { }
-		DFATransitionTable(const DFATransitionTable& other) : transitions_(other.transitions_) { }
+		DFATransitionTable(const DFATransitionTable& other) : transitions_(other.transitions_), dfa_alphabet_(other.dfa_alphabet_) { }
 		DFATransitionTable(DFATransitionTable&& other) { swap(*this, other); }
 		DFATransitionTable& operator=(DFATransitionTable other){ swap(*this, other); return *this; }
 		~DFATransitionTable() = default;
@@ -48,20 +48,26 @@ namespace slarx
 	public:
 		// Reads a DFA from a file located at path
 		DFA(const std::string& path);
-		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { transition_table_.SetAlphabet(other.GetAlphabet()); }
+		DFA(const DFA& other) : Automaton(other), transition_table_(other.transition_table_) { }
 		// Constructor which "cannibalizes" its arguments. Should be used when reading a DFA to ensure that there is sufficient memory before assigning any members.
 		DFA(uint32_t&& number_of_states, Alphabet&& alphabet, State&& start_state, 
-			std::set<State>&& accepting_states, DFATransitionTable&& transition_table) :	
-			Automaton(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states)), transition_table_(transition_table) { }
-		DFA(DFA&& other) { swap(*this, other); }
+			std::set<State>&& accepting_states, DFATransitionTable&& transition_table, bool report_automaton_was_created) :
+			Automaton(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states)), transition_table_(transition_table) 
+		{ if(report_automaton_was_created) ReportAutomatonWasCreated(); }
+		
+		DFA(DFA&& other, bool report_automaton_was_created) { swap(*this, other); if(report_automaton_was_created) ReportAutomatonWasCreated(); }
 		DFA& operator=(DFA other){ swap(*this, other); return *this; }
 		~DFA() = default;
+		
+		static void CreateAutomaton(const std::string& path){ new DFA(path); }
+
+		bool operator<(const DFA& other) const { return (GetIdentifier().GetValue() < other.GetIdentifier().GetValue()); }
 		// Reads information for an Automaton from the file located at path 
 		virtual bool ReadFromFile(const std::string& path) override;
 		// Prints all transitions of the Automaton to target std::ostream
 		virtual void PrintTransitions(std::ostream& output_stream) const override;
 		// Exports the Automaton to a .at file at location path
-		virtual void Export(std::string& path) const override;
+		virtual void Export(const std::string& path) const override;
 
 		// Returns true if word is in the automaton's language and false otherwise
 		virtual bool Recognize(std::string& word) const override;

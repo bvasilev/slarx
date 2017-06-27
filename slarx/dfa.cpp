@@ -80,6 +80,7 @@ namespace slarx
 	DFA::DFA(const std::string& path)
 	{
 		ReadFromFile(path);
+		GetActiveAutomata().insert(this);
 	}
 
 	bool DFA::ReadFromFile(const std::string& path)
@@ -106,7 +107,8 @@ namespace slarx
 			input_file.close();
 			throw std::invalid_argument("Invalid automaton type specified");
 		}
-		return false;
+
+		return true;
 	}
 
 	bool DFA::ReadDFA(const std::string& path)
@@ -160,9 +162,8 @@ namespace slarx
 			throw(std::invalid_argument("Too few transitions specified for a DFA! It should have a transition from every state on every character!"));
 		}
 
-		*this = DFA(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states), std::move(transition_table));
-		
-		Debug("Sucessfully read DFA!");
+		*this = DFA(std::move(number_of_states), std::move(alphabet), std::move(start_state), std::move(accepting_states), std::move(transition_table), false);
+		ReportAutomatonWasCreated();
 
 		return true;
 	}
@@ -180,9 +181,19 @@ namespace slarx
 		transition_table_.PrintTransitions(output_stream);
 	}
 
-	void DFA::Export(std::string& path) const
+	void DFA::Export(const std::string& path) const
 	{
-		throw std::domain_error("Function not implemented.");
+		std::ofstream output_file(path);
+		output_file << "DFA" << std::endl;
+		output_file << GetNumberOfStates() << std::endl;
+		for(char c : GetAlphabet().GetCharacters())
+			output_file << c << " ";
+		output_file << std::endl;
+		output_file << GetStartState().GetValue() << std::endl;
+		for(State s : GetAcceptingStates())
+			output_file << s.GetValue() << " ";
+		output_file << std::endl;
+		PrintTransitions(output_file);
 	}
 
 	bool DFA::Recognize(std::string & word) const

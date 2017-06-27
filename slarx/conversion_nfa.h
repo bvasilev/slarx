@@ -67,10 +67,6 @@ namespace slarx
 
 		DFA ToDFA();// const;
 
-		// Should be in private!
-		// Closes the NFA under epsilon transitions.
-		void EpsilonCloseNFA();
-
 	protected:
 		// Returns an identifier and increments last_assigned_id_
 		// Should be used only when constructing a new Automaton
