@@ -4,8 +4,16 @@ list
 save 1 "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1_ex.txt"
 open "D:\\dev\\c++\\slarx\\slarx\\Tests\\dfa1_ex.txt"
 empty 1
-recognize 1 abab
-recognize 1 abb
+reco 1 abab
+reco 1 abb
 union 1 2
 inf 3
-print 4
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa1.txt"
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa2.txt"
+concat 5 6
+print 7
+open "D:\\dev\\c++\\slarx\\slarx\\Tests\\nfa5.txt"
+empty 8
+kleeny+ 8
+reco 9
+reco 9 a
